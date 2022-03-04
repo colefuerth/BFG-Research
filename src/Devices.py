@@ -46,8 +46,8 @@ class BFG_1(BFG):
 
 class BFG_2(BFG):
     # Specific class for BFG-2
-    def __init__(self, i2c_address):
-        super().__init__(i2c_address)
+    def __init__(self):
+        super().__init__(0x64)
         self.name = 'LTC2941'
         self.manufacturer = 'Analog Device'
 
@@ -55,5 +55,5 @@ class BFG_3(BFG):
     # Specific class for BFG-3
     def __init__(self, i2c_address):
         super().__init__(i2c_address)
-        self.name = 'MAX 17043'
+        self.name = 'MAX17043'
         self.manufacturer = 'Maxim Integrated'
