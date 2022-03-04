@@ -20,12 +20,36 @@ This repository is for development of data collection programs for a Raspberry P
 
 Since two of the units are designed for Arduino, the simplest way to implement this is probably to use an Arduino, and get all data from the arduino, onto the pi, over serial.
 
-### The Pi
+## The Pi
 
 The raspberry pi will be used for data collection, from the raspberry pi. The serial interface between the pi and the arduino will send requests back and forth. The easiest way to do this is with string requests.
 
-### The Arduino
+## The Arduino
 
 The arduino will interface with all hardware devices over I2C. Whenever a request comes in for an update on a device from the Pi, the Arduino will read data on the appropriate I2C interface, and return the data as a csv string.
 
-Documentation on Arduino serial interface is found [in the readme](src/arduino/README.md).
+### Requirements
+
+- Data will be communicated over serial, in JSON format. Arduino library is [ArduinoJSON](https://arduinojson.org/).
+- Manage the I2C bus, using a multiplexer, to get data from the correct devices
+
+### Table of Keys
+
+| Key | Device(s) | Description | Return type |
+| --- | --------- | ----------- | ------------ |
+| D | all devices | specifies the BFG device being queued | echo device |
+| V | LC709203F, MAX17043 | Battery Voltage (V) | float |
+| I | LC709203F, LTC2941 | Battery Current (A) | float |
+| C | ? | Battery Capacity (mAh) | int |
+| S | ? | Battery State (0=discharging, 1=charging) | int |
+| P | ? | Battery Percentage (0-100) | float |
+| T | ? | Battery Temperature (C) | float |
+| W | ? | Battery Wattage (W) | float |
+
+### Input JSON
+
+JSON requests will be one key/value pair. The key will be the device being queried, and the value will be an array of strings associated with values requested.
+
+### Output JSON
+
+Output JSON will be will be a dictionary of key/value pairs. Every query will include a "D":device pair, to identify the device being echoed. The remaining data being sent will be the key/value pairs for queried data.
