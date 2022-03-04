@@ -27,3 +27,5 @@ The raspberry pi will be used for data collection, from the raspberry pi. The se
 ### The Arduino
 
 The arduino will interface with all hardware devices over I2C. Whenever a request comes in for an update on a device from the Pi, the Arduino will read data on the appropriate I2C interface, and return the data as a csv string.
+
+Documentation on Arduino serial interface is found [in the readme](src/arduino/README.md).
