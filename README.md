@@ -32,6 +32,8 @@ The arduino will interface with all hardware devices over I2C. Whenever a reques
 
 - Data will be communicated over serial, in JSON format. Arduino library is [ArduinoJSON](https://arduinojson.org/).
 - Manage the I2C bus, using a multiplexer, to get data from the correct devices
+- All required key responses will be defined in a generic class, which will be a superclass to the BFG devices. This will allow for mosular queries.
+- The BFGs will be kept in a map, where keys are the device string names, and the values are the BFG objects. Each data key will be associated with a BFG function call, so the JSON string queries can be directly mapped to the BFG functions.
 
 ### Table of Keys
 
