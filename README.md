@@ -42,7 +42,7 @@ The arduino will interface with all hardware devices over I2C. Whenever a reques
 | D | all devices | specifies the BFG device being queued | echo device |
 | V | LC709203F, MAX17043 | Battery Voltage (V) | float |
 | I | LC709203F, LTC2941 | Battery Current (A) | float |
-| C | ? | Battery Capacity (mAh) | int |
+| C | ? | Battery Capacity (mAh) | float |
 | S | ? | Battery State (0=discharging, 1=charging) | int |
 | P | ? | Battery Percentage (0-100) | float |
 | T | ? | Battery Temperature (C) | float |

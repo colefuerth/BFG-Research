@@ -2,7 +2,7 @@
 
 ## ArdunioJSON
 
-Library code [here](https://arduinojson.org/).
+Library code [here](https://arduinojson.org/). (imported in ArduinoJSON.h file)
 
 Serialization
 
