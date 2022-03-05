@@ -1,11 +1,13 @@
 // Header file for BFG implementations
 
+#include <Arduino.h>
+
 // generic class for BFG implementations
-class BFG {
+class Device {
 public:
-    BFG() {this._D = "none"; this._addr = 0}
+    Device() {this->_D = "none"; this->_addr = 0;}
     void begin();                   // start I2C interface
-    string D() {return this._D;}    // Device ID
+    String D() {return this->_D;}    // Device ID
     float V() {return 0;}           // Voltage (V)
     float I() {return 0;}           // current (A)
     float C() {return 0;}           // capacity (mAh)
@@ -14,6 +16,6 @@ public:
     float T() {return 0;}           // Temperature (C)
     float W() {return 0;}           // Wattage (W)
 private:
-    string _D;                      // Device ID
+    String _D;                      // Device ID
     int _addr;                      // I2C address
 };

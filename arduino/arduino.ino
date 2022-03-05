@@ -1,7 +1,8 @@
 
 // main file for arduino i2c interface
 
-#include <ArduinoJson-v6.19.2.h>
+#include "ArduinoJson-v6.19.2.h"
+#include "Devices.h"
 
 DynamicJsonDocument doc(1024); // json document for read/write
 
@@ -17,6 +18,5 @@ void loop()
     if (Serial.available())
     {
         deserializeJson(doc, Serial);
-        Serial.println(doc);
     }
 }
