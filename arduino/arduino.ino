@@ -1,10 +1,9 @@
 
 // main file for arduino i2c interface
 
-#include "ArduinoJson-v6.19.2.h" // json library
+#include <ArduinoJson-v6.19.2.h>
 
 DynamicJsonDocument doc(1024); // json document for read/write
-
 
 void setup()
 {
