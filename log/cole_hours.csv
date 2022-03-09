@@ -1,2 +1,3 @@
 date,time_start,time_stop,time_delta,summary
 2022/03/04,14:00,18:30,4:30,Set up repository; collected data on each BFG; began development of Arduino/RPi interface
+2022/03/09,00:00,03:30,3:30,set up arduino_cli and relevant libraries for arduino compiling on pi; implemented BFGs in backend code
