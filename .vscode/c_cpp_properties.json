@@ -35,6 +35,10 @@
             "includePath": [
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\cores\\arduino",
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\variants\\micro",
+                "G:\\My Drive\\Documents\\Arduino\\libraries\\Adafruit_LC709203F",
+                "G:\\My Drive\\Documents\\Arduino\\libraries\\Adafruit_BusIO",
+                "G:\\My Drive\\Documents\\Arduino\\libraries\\Wire\\src",
+                "G:\\My Drive\\Documents\\Arduino\\libraries\\SPI\\src",
                 "c:\\program files (x86)\\arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\7.3.0\\include",
                 "c:\\program files (x86)\\arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\7.3.0\\include-fixed",
                 "c:\\program files (x86)\\arduino\\hardware\\tools\\avr\\avr\\include"
