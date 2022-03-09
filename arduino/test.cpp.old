@@ -1,0 +1,27 @@
+/**
+ * Test ArduinoJson library
+ */
+
+#include <string>
+#include <iostream>
+#include "ArduinoJson-v6.19.2.h"
+
+int main()
+{
+    using namespace std;
+    string test_str = "{\"LC709203F\":\"VP\"}";
+    DynamicJsonDocument doc(1024);
+    deserializeJson(doc, test_str);
+    JsonObject root = doc.as<JsonObject>();
+    for (JsonPair kv : root)
+    {
+        string k = kv.key().c_str();
+        string v = string(kv.value().as<const char *>());
+        cout << k << endl;
+        cout << v << "\nIndividually:" << endl;
+        for (auto c : v)
+        {
+            cout << c << endl;
+        }
+    }
+}

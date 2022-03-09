@@ -5,13 +5,13 @@
             "name": "Win32",
             "compilerPath": "",
             "compilerArgs": [],
-            "intelliSenseMode": "windows-gcc-x64",
+            "intelliSenseMode": "gcc-x64",
             "includePath": [
                 "${workspaceFolder}/**"
             ],
             "forcedInclude": [],
-            "cStandard": "c17",
-            "cppStandard": "c++17",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
             "defines": [
                 "_DEBUG",
                 "UNICODE",
@@ -20,7 +20,7 @@
         },
         {
             "name": "Linux",
-            "compilerPath": "",
+            "compilerPath": "~/Arduino/arduino-1.8.15/hardware/tools/avr/bin/avr-g++",
             "compilerArgs": [],
             "intelliSenseMode": "gcc-x64",
             "includePath": [
@@ -28,8 +28,8 @@
                 "~/Arduino/libraries"
             ],
             "forcedInclude": [],
-            "cStandard": "c17",
-            "cppStandard": "c++17",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
             "defines": [
                 "_DEBUG",
                 "UNICODE",

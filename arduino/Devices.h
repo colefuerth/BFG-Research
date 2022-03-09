@@ -6,15 +6,9 @@
 #include <Wire.h>
 #include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
 
-/**
- * generic class for BFG implementations
- *
- * All hardware devices will inherit from this superclass.
- * This way, all payloads can be handled in a generic way, with one universal serial interface. The pi at the other end can worry about valid calls and such.
- */
-
 // If there is a major fault, display msg on serial and flash LED
-void ERROR(const char msg[])
+// all messages should be PROGMEM strings, to save stack space
+void ERROR(const __FlashStringHelper* msg)
 {
     Serial.println(msg);
     pinMode(LED_BUILTIN, OUTPUT);
@@ -60,9 +54,8 @@ public:
     LC709203F() : Device()
     {
         this->_D = "LC709203F";
-        const static char emsg[] PROGMEM = "Couldnt find Adafruit LC709203F?\nMake sure a battery is plugged in!";
         if (!this->lc.begin())
-            ERROR(emsg);
+            ERROR(F("Couldnt find Adafruit LC709203F?\nMake sure a battery is plugged in!"));
         // lc.setThermistorB(3950);
         lc.setPackSize(LC709203F_APA_1000MAH);
         lc.setAlarmVoltage(3.4);
@@ -101,9 +94,8 @@ public:
     MAX1704x_BFG() : Device()
     {
         this->_D = "MAX1704x";
-        const static char emsg[] PROGMEM = "MAX17044 not detected. Please check wiring. Freezing.";
         if (!lipo.begin())
-            ERROR(emsg);
+            ERROR(F("MAX17044 not detected. Please check wiring. Freezing."));
         // Quick start restarts the MAX17044 in hopes of getting a more accurate guess for the SOC.
         lipo.quickStart();
 
