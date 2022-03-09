@@ -20,6 +20,8 @@ This repository is for development of data collection programs for a Raspberry P
 
 Since two of the units are designed for Arduino, the simplest way to implement this is probably to use an Arduino, and get all data from the arduino, onto the pi, over serial.
 
+**The Python code for Pi is under `src`; the arduino code is under `arduino`**
+
 ## The Pi
 
 The raspberry pi will be used for data collection, from the raspberry pi. The serial interface between the pi and the arduino will send requests back and forth. The easiest way to do this is with string requests.
