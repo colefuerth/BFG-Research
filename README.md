@@ -10,11 +10,11 @@ This repository is for development of data collection programs for a Raspberry P
 
 ## BFG Units Tested
 
-| BFG                                            | Product                                                                                        | Datasheet                                                                    | `pip` Library                                                                                    | Manufacture    | Description                                                                                         |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------- | --------------------------------------------------------------------------------------------------- |
-| <img src="img/BFG1.jpg" width=300 alt='BFG_1'> | [LC709203F](https://www.adafruit.com/product/4712)                                             | [Short Guide](datasheets/adafruit-lc709203f-lipo-lipoly-battery-monitor.pdf) | [adafruit-circuitpython-lc709203f](https://github.com/adafruit/Adafruit_CircuitPython_LC709203F) | AdaFruit       | This BFG reads a combination of voltage and current, to estimate the battery's charge and capacity. |
-| <img src='img/BFG2.jpg' width=300 alt='BFG_2'> | [LTC2941](https://www.analog.com/en/products/ltc2941.html#product-overview)                    | [Datasheet](datasheets/LTC2941.pdf)                                          | **no pip library.** gonna have to make one                                                       | Analog Devices | Measures mAh drawn from a LiPo battery.                                                             |
-| <img src='img/BFG3.jpg' width=300 alt='BFG_3'> | [MAX17043](https://www.maximintegrated.com/en/products/power/battery-management/MAX17043.html) | [Datasheet](datasheets/MAX17043-MAX17044.pdf)                                | **no pip library.** gonna have to make one                                                       | Analog Devices | Measures mV across battery cell for estimate.                                                       |
+| BFG                                            | Product                                                                                        | Datasheet                                                                    | `pip` Library                                                                                    | Arduino Library                                                                                               | Manufacture    | Description                                                                                         |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------- |
+| <img src="img/BFG1.jpg" width=300 alt='BFG_1'> | [LC709203F](https://www.adafruit.com/product/4712)                                             | [Short Guide](datasheets/adafruit-lc709203f-lipo-lipoly-battery-monitor.pdf) | [adafruit-circuitpython-lc709203f](https://github.com/adafruit/Adafruit_CircuitPython_LC709203F) | [Adafruit_LC709203F](https://github.com/adafruit/Adafruit_LC709203F)                                          | AdaFruit       | This BFG reads a combination of voltage and current, to estimate the battery's charge and capacity. |
+| <img src='img/BFG2.jpg' width=300 alt='BFG_2'> | [LTC2941](https://www.analog.com/en/products/ltc2941.html#product-overview)                    | [Datasheet](datasheets/LTC2941.pdf)                                          | **no pip library.** gonna have to make one                                                       | [Seeed_LTC2941](https://github.com/Seeed-Studio/Seeed_LTC2941)                                                | Analog Devices | Measures mAh drawn from a LiPo battery.                                                             |
+| <img src='img/BFG3.jpg' width=300 alt='BFG_3'> | [MAX17043](https://www.maximintegrated.com/en/products/power/battery-management/MAX17043.html) | [Datasheet](datasheets/MAX17043-MAX17044.pdf)                                | **no pip library.** gonna have to make one                                                       | [SparkFun library](https://www.arduinolibraries.info/libraries/spark-fun-max1704x-fuel-gauge-arduino-library) | Analog Devices | Measures mV across battery cell for estimate.                                                       |
 
 ## Implementation
 
@@ -39,16 +39,16 @@ The arduino will interface with all hardware devices over I2C. Whenever a reques
 
 ### Table of Keys
 
-| Key | Device(s) | Description | Return type |
-| --- | --------- | ----------- | ------------ |
-| D | all devices | specifies the BFG device being queued | echo device |
-| V | LC709203F, MAX17043 | Battery Voltage (V) | float |
-| I | LC709203F, LTC2941 | Battery Current (A) | float |
-| C | ? | Battery Capacity (mAh) | float |
-| S | ? | Battery State (0=discharging, 1=charging) | int |
-| P | ? | Battery Percentage (0-100) | float |
-| T | ? | Battery Temperature (C) | float |
-| W | ? | Battery Wattage (W) | float |
+| Key | Device(s)           | Description                               | Return type |
+| --- | ------------------- | ----------------------------------------- | ----------- |
+| D   | all devices         | specifies the BFG device being queued     | echo device |
+| V   | LC709203F, MAX17043 | Battery Voltage (V)                       | float       |
+| I   | LC709203F, LTC2941  | Battery Current (A)                       | float       |
+| C   | ?                   | Battery Capacity (mAh)                    | float       |
+| S   | ?                   | Battery State (0=discharging, 1=charging) | int         |
+| P   | ?                   | Battery Percentage (0-100)                | float       |
+| T   | ?                   | Battery Temperature (C)                   | float       |
+| W   | ?                   | Battery Wattage (W)                       | float       |
 
 ### Input JSON
 
