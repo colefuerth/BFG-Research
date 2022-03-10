@@ -1,59 +1,66 @@
-# Classes to connect to the individual BFG devices
+# Classes to connect to the individual Sensor devices
 
-class HID:
-    # Generic Hardware Interface Device with RPi
-    # provides basic functionality for all devices over I2C to inherit from
-    def __init__(self, i2c_address):
-        self.i2c_address = i2c_address
-        self.name = "HID"
-        self.manufacturer = "Unknown"
+from time import sleep, time
+import serial
+import json
+from datetime import datetime, timezone
+
+arduino = serial.Serial(port='COM4', baudrate=115200, timeout=.1)
+
+"""
+V: volts (V)
+I: current (A)
+C: charged (mAh)
+P: percentage
+T: temperature (C)
+"""
+
+class Sensor(HID):
+    # Generic class to interface with Sensor devices
+    # this will provide a universal interface for data collecton between the three different Sensor devices
+    def __init__(self):
+        super().__init__()
+        self.name = 'Generic Sensor device'
+        self.manufacturer = 'generic'
+        self.data = {'V': '', 'I': '', 'C': '', 'P': '', 'T': ''}
+        self.updstr = ''
+
+    def data(self):
+        if updstr == '':
+            raise ValueError('No data in request string to be sent')
+        arduino.write(
+            bytes(f'{{{self.name}:{self.updstr}}}', encoding='utf-8'))
+        time.sleep(0.05)
+        self.data.update(
+            json.load(str(arduino.readline(), encoding='utf-8')))
+        return [self.name, *[self.data[key] for key in 'VICPT'], datetime.now(timezone.utc).__str__()]
 
     def __str__(self):
         return f'{self.name} ({self.manufacturer})'
 
-class BFG(HID):
-    # Generic class to interface with BFG devices
-    # this will provide a universal interface for data collecton between the three different BFG devices
-    def __init__(self, i2c_address):
-        super().__init__(i2c_address)
-        self.name = 'BFG device'
-        self.manufacturer = 'generic'
 
-    def percent_capacity(self):
-        pass
-
-    def voltage(self):
-        pass
-
-    def current(self):
-        pass
-
-    def temperature(self):
-        pass
-
-    def power(self):
-        return self.voltage() * self.current()
-
-class BFG_1(BFG):
-    # Specific class for BFG-1
-    def __init__(self, i2c_address):
-        super().__init__(i2c_address)
-        # product page: https://www.adafruit.com/product/4712
-        # library: https://github.com/adafruit/Adafruit_CircuitPython_LC709203F
-        # notes: you will need to slow down the i2c port
+class LC709203F(Sensor):
+    # Specific class for Sensor-1
+    def __init__(self):
+        super().__init__()
         self.name = 'LC709203F'
         self.manufacturer = 'AdaFruit'
+        self.updstr = 'VPT'
 
-class BFG_2(BFG):
-    # Specific class for BFG-2
+
+class LTC2941(Sensor):
+    # Specific class for Sensor-2
     def __init__(self):
-        super().__init__(0x64)
+        super().__init__()
         self.name = 'LTC2941'
         self.manufacturer = 'Analog Device'
+        self.updstr = 'CP'
 
-class BFG_3(BFG):
-    # Specific class for BFG-3
-    def __init__(self, i2c_address):
-        super().__init__(i2c_address)
+
+class MAX17043(Sensor):
+    # Specific class for Sensor-3
+    def __init__(self):
+        super().__init__()
         self.name = 'MAX17043'
         self.manufacturer = 'Maxim Integrated'
+        self.updstr = 'VP'
