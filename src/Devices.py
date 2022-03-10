@@ -1,8 +1,7 @@
 # Classes to connect to the individual Sensor devices
 
-from time import sleep, time
-import serial
-import json
+import serial, json
+from time import sleep
 from datetime import datetime, timezone
 
 arduino = serial.Serial(port='COM4', baudrate=115200, timeout=.1)
