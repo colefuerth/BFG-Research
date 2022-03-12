@@ -3,3 +3,4 @@ date,time_start,time_stop,time_delta,summary
 2022/03/09,00:00,03:30,3:30,set up arduino_cli and relevant libraries for arduino compiling on pi; implemented BFGs in backend code
 2022/03/09,11:30,14:30,3:00,Finished arduino-side serial comms (json deserialize and reserialize)
 2022/03/09,20:00,21:30,1:30,Python BFG update system implemented
+2022/03/12,16:30,17:30,1:00,Documentation and library collection on all remaining non-BFG devices
