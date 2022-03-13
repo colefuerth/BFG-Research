@@ -38,7 +38,7 @@
             "browse": {
                 "path": [
                     "~/Arduino/arduino-1.8.15/hardware/arduino/avr/libraries",
-                    "~/Arduino",
+                    "~/Arduino/libraries",
                     "${workspaceFolder}/**"
                 ]
             }

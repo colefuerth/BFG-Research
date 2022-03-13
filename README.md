@@ -8,17 +8,19 @@ This repository is for development of data collection programs for a Raspberry P
 
 **To run the program, please run:** `python src/main.py`
 
+The [arduino-cli](https://siytek.com/arduino-cli-raspberry-pi/) project is used for compiling and uploading the Arduino code on a command line, using the Makefile. Do steps up to and including *Adding to $PATH*, and then use `make libraries` in the `arduino` folder to install the avr binary and the arduino libraries.
+
 ## Devices Interfaced
 
-| Device                                                    | Product Page                                                                                        | Datasheet                                                                    | Arduino Library                                                                                 | Manufacture    | Description                                                                                         |
-| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------- |
-| <img src="img/BFG1.jpg" width=600 alt='BFG_1'>            | [LC709203F](https://www.adafruit.com/product/4712)                                             | [Short Guide](datasheets/adafruit-lc709203f-lipo-lipoly-battery-monitor.pdf) | [Adafruit_LC709203F](https://github.com/adafruit/Adafruit_LC709203F)                            | AdaFruit       | BFG, reads a combination of voltage and current, to estimate the battery's charge and capacity. |
-| <img src='img/BFG2.jpg' width=600 alt='BFG_2'>            | [LTC2941](https://www.analog.com/en/products/ltc2941.html#product-overview)                    | [Datasheet](datasheets/LTC2941.pdf)                                          | [Seeed_LTC2941](https://github.com/Seeed-Studio/Seeed_LTC2941)                                  | Analog Devices | BFG, Measures mAh drawn from a LiPo battery.                                                             |
-| <img src='img/BFG3.jpg' width=600 alt='BFG_3'>            | [MAX17043](https://www.maximintegrated.com/en/products/power/battery-management/MAX17043.html) | [Datasheet](datasheets/MAX17043-MAX17044.pdf)                                | [SparkFun library](https://github.com/sparkfun/SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library)    | Analog Devices | BFG, Measures mV across battery cell for estimate.                                                       |
-| <img src='img/TCA9548A.jpg' width=600 alt='multiplexer'>  | [TCA9548A](https://learn.adafruit.com/adafruit-tca9548a-1-to-8-i2c-multiplexer-breakout/downloads)  | [Datasheet](datasheets/tca9548a.pdf)                                         | [GitHub library](https://github.com/WifWaf/TCA9548A)                                            | AdaFruit       | An I2C multiplexer, for connecting all devices to the arduino I2C bus.                              |
-| <img src='img/SHTC3.jpg' width=600 alt='multiplexer'>     | [SHTC3](https://learn.adafruit.com/adafruit-sensirion-shtc3-temperature-humidity-sensor/arduino)    | [Datasheet](datasheets/SHTC3.pdf)                                            | [GitHub library](https://github.com/adafruit/Adafruit_SHTC3)                                    | AdaFruit       | Adafruit Sensirion SHTC3 Temperature & Humidity Sensor                                              |
-| <img src='img/MAX31855.jpg' width=600 alt='thermocouple'> | [MAX31855](https://www.adafruit.com/product/269)                                                    | [Datasheet](datasheets/MAX31855.pdf)                                         | [Arduino Guide](https://learn.adafruit.com/thermocouple/arduino-code#arduino-library-2958404-6) | AdaFruit       | Thermocouple Amplifier MAX31855 breakout board                                                      |
-| <img src='img/INA260.jpg' width=600 alt='power sensor'>   | [INA260](https://learn.adafruit.com/adafruit-ina260-current-voltage-power-sensor-breakout)          | [Datasheet](datasheets/ina260.pdf)                                           | [GitHub library](https://github.com/adafruit/Adafruit_INA260)                                   | AdaFruit       | Adafruit INA260 Current + Voltage + Power Sensor                                                    |
+| Device                                                    | Product Page                                                                                       | Datasheet                                                                    | Arduino Library                                                                                                                                                  | Manufacture    | Description                                                                                       |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------- |
+| <img src="img/BFG1.jpg" width=600 alt='BFG_1'>            | [LC709203F](https://www.adafruit.com/product/4712)                                                 | [Short Guide](datasheets/adafruit-lc709203f-lipo-lipoly-battery-monitor.pdf) | [Adafruit_LC709203F](https://github.com/adafruit/Adafruit_LC709203F)                                                                                             | AdaFruit       | BFG, reads a combination of voltage and current, to estimate the battery's charge and capacity.   |
+| <img src='img/BFG2.jpg' width=600 alt='BFG_2'>            | [LTC2941](https://www.analog.com/en/products/ltc2941.html#product-overview)                        | [Datasheet](datasheets/LTC2941.pdf)                                          | [Seeed_LTC2941](https://github.com/Seeed-Studio/Seeed_LTC2941)                                                                                                   | Analog Devices | BFG, Measures mAh drawn from a LiPo battery.                                                      |
+| <img src='img/BFG3.jpg' width=600 alt='BFG_3'>            | [MAX17043](https://www.maximintegrated.com/en/products/power/battery-management/MAX17043.html)     | [Datasheet](datasheets/MAX17043-MAX17044.pdf)                                | [SparkFun library](https://github.com/sparkfun/SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library)                                                                     | Analog Devices | BFG, Measures mV across battery cell for estimate.                                                |
+| <img src='img/TCA9548A.jpg' width=600 alt='multiplexer'>  | [TCA9548A](https://learn.adafruit.com/adafruit-tca9548a-1-to-8-i2c-multiplexer-breakout/downloads) | [Datasheet](datasheets/tca9548a.pdf)                                         | [GitHub](https://github.com/WifWaf/TCA9548A)                                                                                                                     | AdaFruit       | An I2C multiplexer, for connecting all devices to the arduino I2C bus.                            |
+| <img src='img/SHTC3.jpg' width=600 alt='multiplexer'>     | [SHTC3](https://learn.adafruit.com/adafruit-sensirion-shtc3-temperature-humidity-sensor/arduino)   | [Datasheet](datasheets/SHTC3.pdf)                                            | [GitHub library](https://github.com/adafruit/Adafruit_SHTC3)                                                                                                     | AdaFruit       | Adafruit Sensirion SHTC3 Temperature & Humidity Sensor                                            |
+| <img src='img/MAX31855.jpg' width=600 alt='thermocouple'> | [MAX31855](https://www.adafruit.com/product/269)                                                   | [Datasheet](datasheets/MAX31855.pdf)                                         | [Arduino Guide](https://learn.adafruit.com/thermocouple/arduino-code#arduino-library-2958404-6), [GitHub](https://github.com/adafruit/Adafruit-MAX31855-library) | AdaFruit       | Thermocouple Amplifier MAX31855 breakout board, USES SERIAL. might need to connect directly to Pi |
+| <img src='img/INA260.jpg' width=600 alt='power sensor'>   | [INA260](https://learn.adafruit.com/adafruit-ina260-current-voltage-power-sensor-breakout)         | [Datasheet](datasheets/ina260.pdf)                                           | [GitHub library](https://github.com/adafruit/Adafruit_INA260)                                                                                                    | AdaFruit       | Adafruit INA260 Current + Voltage + Power Sensor                                                  |
 
 ## Implementation
 
@@ -45,17 +47,18 @@ The arduino will interface with all hardware devices over I2C. Whenever a reques
 
 ### Table of Keys and Callable Data
 
-| Key | Device(s) callable  | Description                       | Return type |
-| --- | ------------------- | --------------------------------- | ----------- |
-| D   | all devices         | specifies the device being queued | echo device |
-| V   | LC709203F, MAX17043 | Battery Voltage (V)               | float       |
-| I   | none                | Battery Current (A)               | float       |
-| C   | LTC2941             | Battery Capacity (mAh)            | float       |
-| P   | LTC2941, MAX17043   | Battery Percentage (0-100)        | float       |
-| T   | LC709203F           | Battery Temperature (C)           | float       |
+| Key | Device(s) callable          | Description                       | Return type |
+| --- | --------------------------- | --------------------------------- | ----------- |
+| D   | all devices                 | specifies the device being queued | echo device |
+| V   | LC709203F, MAX17043, INA260 | Battery Voltage (V)               | float       |
+| I   | INA260                      | Battery Current (mA)              | float       |
+| W   | INA260                      | Battery Wattage (mW)              | float       |
+| C   | LTC2941                     | Battery Capacity (mAh)            | float       |
+| P   | LTC2941, MAX17043           | Battery Percentage (0-100)        | float       |
+| T   | LC709203F                   | Battery Temperature (C)           | float       |
+| H   | SHTC3                       | Ambient Humidity (Relative, %)    | float       |
 
 <!-- | S                   | ?                                 | Battery State (0=discharging, 1=charging) | int   | -->
-<!-- | W                   | ?                                 | Battery Wattage (W)                       | float | -->
 
 ### Request JSON (Pi -> Arduino)
 
