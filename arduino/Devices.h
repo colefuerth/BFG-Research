@@ -6,6 +6,8 @@
 #include <Wire.h>
 #include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
 
+// --------------- UTILITY FUNCTIONS ---------------
+
 // If there is a major fault, display msg on serial and flash LED
 // all messages should be PROGMEM strings, to save stack space
 void ERROR(const __FlashStringHelper* msg)
@@ -20,6 +22,8 @@ void ERROR(const __FlashStringHelper* msg)
         delay(100);
     }
 }
+
+// ------------------ DEVICE BASE CLASS ------------------
 
 class Device
 {
@@ -38,16 +42,8 @@ protected:
     String _D; // Device ID
 };
 
-/**
- * BFG implementation for the LTC2941
- *
- * This class is used to interface with the LTC2941.
- * Since this is a one-off, we will hard-code everything.
- * This class only needs to provide data readings externally.
- *
- * @author
- * @version 1.0
- */
+// ------------------ BFG DEVICES ------------------
+
 class LC709203F : public Device
 {
 public:
