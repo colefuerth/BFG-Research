@@ -5,3 +5,4 @@ date,time_start,time_stop,time_delta,summary
 2022/03/09,20:00,21:30,1:30,Python BFG update system implemented
 2022/03/12,16:30,17:30,1:00,Documentation and library collection on all remaining non-BFG devices
 2022/03/13,11:30,14:00,2:30,Imported remaining libraries; began implementing non-bfg arduino devices; documentation updates
+2022/03/13,20:30,21:30,1:00,Completed remaining devices on the Arduino; arduino is ready for testing

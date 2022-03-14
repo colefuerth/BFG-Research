@@ -3,22 +3,21 @@
 
 #include "ArduinoJson-v6.19.2.h"
 #include "Devices.h"
-#include <Wire.h>
-// #include <map>
+// #include <Wire.h>
 
 StaticJsonDocument<1024> doc; // json document for read/write, declared on the stack
 
 // array of devices
 // here to make sure that devices do indeed compile;
 // if they are not called in main, they will not compile
-Device devices[] = {LC709203F(), LTC2941_BFG(), MAX1704x_BFG()};
+TCA9548AMUX mux(Wire);
+Device devices[] = {LC709203F(), LTC2941_BFG(), MAX1704x_BFG(), SHTC3(), MAX31855(), INA260()};
 
 void setup()
 {
     Serial.begin(115200);
     while (!Serial.available())
-        ;
-    Wire.begin();
+        delay(10);
 }
 
 void loop()
@@ -78,6 +77,10 @@ String getValue(Device *d, char V)
         return String(d->P());
     case 'T':
         return String(d->T());
+    case 'H':
+        return String(d->H());
+    case 'W':
+        return String(d->W());
     default:
         return "";
     }

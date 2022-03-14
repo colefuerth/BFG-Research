@@ -12,7 +12,9 @@
 // remaining libraries
 #include <TCA9548A.h>
 #include <Adafruit_SHTC3.h>
-// #include <Adafruit_MAX31855.h>
+#include <SPI.h> // for thermocouple softserial
+#include <Adafruit_MAX31855.h>
+#include <Adafruit_INA260.h>
 
 // --------------- UTILITY FUNCTIONS ---------------
 
@@ -37,7 +39,7 @@ class Device
 {
 public:
     Device() { this->_D = "none"; }
-    void begin();                   // start I2C interface
+    // void begin();                   // start I2C interface
     String D() { return this->_D; } // Device ID
     float V() { return 0; }         // Voltage (V)
     float I() { return 0; }         // current (mA)
@@ -118,13 +120,14 @@ public:
 // ------------------ REMAINING I2C DEVICES ------------------
 
 // TODO: add more info to this class
-class TCA9548AMUX : public Device
+class TCA9548AMUX
 {
 public:
-    TCA9548AMUX() : Device()
+    TCA9548AMUX(TwoWire &w)
     {
         this->_D = "TCA9548A";
-        this->tca.begin(Wire);
+        // Wire.begin(); // open wire connection
+        this->tca.begin(w);  // can be started without Wire.begin()
         tca.openAll(); // by default, open all channels. Only mess with this if there are address conflicts
     }
 
@@ -139,7 +142,8 @@ public:
     }
 
 private:
-    TCA9548A tca;
+    TCA9548A tca; // address can be passed into the constructor
+    String _D;
 };
 
 class SHTC3 : public Device
@@ -172,4 +176,46 @@ private:
     {
         this->shtc3.getEvent(&humidity, &temp);
     }
+};
+
+class MAX31855 : public Device
+{
+public:
+    MAX31855() : Device()
+    {
+        this->_D = "MAX31855";
+        uint8_t MAXDO = 3, MAXCS = 4, MAXCLK = 5;
+        this->thermocouple = new Adafruit_MAX31855(MAXDO, MAXCS, MAXCLK);
+        if (!this->thermocouple->begin())
+            ERROR(F("Couldn't find MAX31855"));
+    }
+
+    float C()
+    {
+        double c = this->thermocouple->readCelsius();
+        if (isnan(c))
+            ERROR(F("Something wrong with thermocouple!"));
+        return c;
+    }
+
+private:
+    Adafruit_MAX31855 *thermocouple;
+};
+
+class INA260 : public Device
+{
+public:
+    INA260() : Device()
+    {
+        this->_D = "INA260";
+        if (!this->ina.begin())
+            ERROR(F("Couldn't find INA260"));
+    }
+
+    float V() { return this->ina.readBusVoltage(); }
+    float I() { return this->ina.readCurrent(); }
+    float W() { return this->ina.readPower(); }
+
+protected:
+    Adafruit_INA260 ina = Adafruit_INA260();
 };
