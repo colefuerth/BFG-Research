@@ -2,3 +2,5 @@
 ~$*
 *.out
 bin/
+arduino/test
+__pycache__/
