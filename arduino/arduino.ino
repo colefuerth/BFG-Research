@@ -4,28 +4,33 @@
 #include "ArduinoJson-v6.19.2.h"
 #include "Devices.h"
 
-StaticJsonDocument<1024> doc; // json document for read/write, declared on the stack
+StaticJsonDocument<128> doc; // json document for read/write, declared on the stack
 
 // array of devices
 // here to make sure that devices do indeed compile;
 // if they are not called in main, they will not compile
-TCA9548AMUX mux(Wire);
-Device *devices[] = {new LC709203F(), new LTC2941_BFG(), new MAX1704x_BFG(), new SHTC3(), new MAX31855(), new INA260()};
+//TCA9548AMUX mux(Wire);
+// Device *devices[] = {new LC709203F(), new LTC2941_BFG(), new MAX1704x_BFG(), new SHTC3(), new MAX31855(), new INA260()};
+Device *devices[] = {new Device()};
 
 void setup()
 {
     Serial.begin(115200);
-    while (!Serial.available())
-        delay(10);
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, LOW);
+    // Serial.println("Done setup");
 }
 
 void loop()
 {
     // check for new data
-    if (Serial.available())
+    if (Serial.available() > 0)
     {
+        digitalWrite(LED_BUILTIN, HIGH);
         // incoming data comes in as{DeviceStr:RequestsStr}
         // example: {LC709203F:VP} will get Voltage and Percent from LC709203F device
+        // String s = Serial.readString();
+        // Serial.println(s);
         deserializeJson(doc, Serial);
         JsonObject root = doc.as<JsonObject>();
         for (JsonPair kv : root)
@@ -33,22 +38,25 @@ void loop()
             // iterate through devices
             String k = kv.key().c_str();
             Device *d = getDevice(k);
-            String v = String(kv.value().as<const char *>());
+            String v = kv.value().as<const char *>();
+            // Serial.println("key: " + k + " value: " + v);
             // for each device, create a nested map of requests and values to be returned
-            JsonVariant ret;
+            DynamicJsonDocument ret(128);
+            ret["D"] = d->D();
             for (char c : v)
             {
-                ret[c] = getValue(d, c);
+                ret[String(c)] = getValue(d, c);
             }
-            root[k] = ret;
+            serializeJson(ret, Serial); // send return package
         }
-        serializeJson(doc, Serial); // send return package
+        digitalWrite(LED_BUILTIN, LOW);
+        Serial.write('\n');
     }
 }
 
 Device *getDevice(String _D)
 {
-    for (Device* d : devices)
+    for (Device *d : devices)
     {
         if (d->D() == _D)
         {
@@ -61,22 +69,22 @@ Device *getDevice(String _D)
 
 String getValue(Device *d, char V)
 {
-    switch(V)
+    switch (V)
     {
     case 'V':
-        return String(d->V());
+        return String(d->V(), 3);
     case 'I':
-        return String(d->I());
+        return String(d->I(), 3);
     case 'C':
-        return String(d->C());
+        return String(d->C(), 3);
     case 'P':
-        return String(d->P());
+        return String(d->P(), 3);
     case 'T':
-        return String(d->T());
+        return String(d->T(), 3);
     case 'H':
-        return String(d->H());
+        return String(d->H(), 3);
     case 'W':
-        return String(d->W());
+        return String(d->W(), 3);
     default:
         return "";
     }
