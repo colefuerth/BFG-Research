@@ -2,10 +2,15 @@
 # arduino-cli install instructions https://siytek.com/arduino-cli-raspberry-pi/
 
 AC = arduino-cli
-USB = /dev/ttyUSB0
+# USB = /dev/ttyACM0
+USB = COM5
 MAIN = arduino
-BOARD = arduino:avr:micro
-# "programmer": "arduino:avrispmkii"
+BOARD = arduino:avr:nano:cpu=atmega328old
+# BOARD = arduino:avr:micro
+PROGRAMMER = avrispmkii
+
+# LIST PROGRAMMERS
+# arduino-cli board details -b arduino:avr:micro --list-programmers
 
 # verbose cli flag is -v or --verbose
 
@@ -25,12 +30,21 @@ libraries:
 	$(AC) lib install "Adafruit MAX31855 library"
 	$(AC) lib install "Adafruit INA260 Library"
 	
+attach:
+	$(AC) board attach -b $(BOARD) $(MAIN)
 
 build:
-	$(AC) compile --fqbn $(BOARD) $(MAIN).ino
+	make attach
+	$(AC) compile $(MAIN)
+#	$(AC) compile --fqbn $(BOARD) $(MAIN)
 
 upload:
-	$(AC) upload -p $(USB) --fqbn $(BOARD) $(MAIN)
+	make build
+	$(AC) upload -p $(USB) -P $(PROGRAMMER) $(MAIN)
 
 clean:
 	$(AC) cache clean -v
+
+find:
+	$(AC) core update-index
+	$(AC) board list

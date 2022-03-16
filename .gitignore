@@ -1,3 +1,4 @@
 # Temporary excel and word files should be ignored
 ~$*
 *.out
+bin/
