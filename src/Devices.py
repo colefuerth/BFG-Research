@@ -1,38 +1,48 @@
 # Classes to connect to the individual Sensor devices
 
-import serial, json
+import serial
+import json
 from time import sleep
 from datetime import datetime, timezone
 
-arduino = serial.Serial(port='COM4', baudrate=115200, timeout=.1)
+arduino = serial.Serial(port='COM5', baudrate=9600, timeout=.5)
 
-"""
-V: volts (V)
-I: current (A)
-C: charged (mAh)
-P: percentage
-T: temperature (C)
-"""
+# callable attributes on sensors
+attributes = {
+    'V': 'Voltage',
+    'I': 'Current (mA)',
+    'C': 'Charge (mAh)',
+    'P': 'Percentage',
+    'T': 'Temperature (C)',
+    'H': 'Humidity',
+    'W': 'Power (W)',
+}
 
-class Sensor(HID):
+
+class Sensor:
     # Generic class to interface with Sensor devices
     # this will provide a universal interface for data collecton between the three different Sensor devices
     def __init__(self):
-        super().__init__()
-        self.name = 'Generic Sensor device'
+        self.name = 'none'
         self.manufacturer = 'generic'
-        self.data = {s:'' for s in 'VICPT'}
-        self.updstr = ''
+        self.datadict = {s: '' for s in attributes.keys()}
+        self.updstr = ''.join(attributes.keys())
 
     def data(self):
-        if updstr == '':
-            raise ValueError('No data in request string to be sent')
+        sent = f'{{"{self.name}":"{self.updstr}"}}'
+        print('sent: ' + sent)
         arduino.write(
-            bytes(f'{{{self.name}:{self.updstr}}}', encoding='utf-8'))
-        time.sleep(0.05)
-        self.data.update(
-            json.load(str(arduino.readline(), encoding='utf-8')))
-        return [self.name, *[self.data[key] for key in 'VICPT'], datetime.now(timezone.utc).__str__()]
+            bytes(sent, encoding='utf-8'))
+        sleep(0.1)
+        recv = arduino.readline()
+        print(recv)
+        recv = str(arduino.readline(), encoding='utf-8')
+        print('recv: ' + recv)
+        recv = json.load(recv)
+        assert(recv["D"] == self.updstr)
+        recv.pop('D')
+        self.datadict.update(recv)
+        return [self.name, *[self.datadict[key] for key in updstr], datetime.now(timezone.utc).__str__()]
 
     def __str__(self):
         return f'{self.name} ({self.manufacturer})'
