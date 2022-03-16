@@ -3,7 +3,6 @@
 
 #include "ArduinoJson-v6.19.2.h"
 #include "Devices.h"
-// #include <Wire.h>
 
 StaticJsonDocument<1024> doc; // json document for read/write, declared on the stack
 
@@ -11,7 +10,7 @@ StaticJsonDocument<1024> doc; // json document for read/write, declared on the s
 // here to make sure that devices do indeed compile;
 // if they are not called in main, they will not compile
 TCA9548AMUX mux(Wire);
-Device devices[] = {LC709203F(), LTC2941_BFG(), MAX1704x_BFG(), SHTC3(), MAX31855(), INA260()};
+Device *devices[] = {new LC709203F(), new LTC2941_BFG(), new MAX1704x_BFG(), new SHTC3(), new MAX31855(), new INA260()};
 
 void setup()
 {
@@ -34,10 +33,6 @@ void loop()
             // iterate through devices
             String k = kv.key().c_str();
             Device *d = getDevice(k);
-            if (d->D() != k)
-            {
-                ERROR(F("Requested device not found"));
-            }
             String v = String(kv.value().as<const char *>());
             // for each device, create a nested map of requests and values to be returned
             JsonVariant ret;
@@ -53,14 +48,15 @@ void loop()
 
 Device *getDevice(String _D)
 {
-    for (auto d : devices)
+    for (Device* d : devices)
     {
-        if (d.D() == _D)
+        if (d->D() == _D)
         {
-            return &d;
+            return d;
         }
     }
-    return &Device(); // will return an empty device if not found
+    ERROR(F("Requested device not found"));
+    return NULL; // will return an empty device if not found
 }
 
 String getValue(Device *d, char V)
