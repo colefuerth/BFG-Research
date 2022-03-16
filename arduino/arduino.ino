@@ -9,15 +9,22 @@ StaticJsonDocument<128> doc; // json document for read/write, declared on the st
 // array of devices
 // here to make sure that devices do indeed compile;
 // if they are not called in main, they will not compile
-//TCA9548AMUX mux(Wire);
-// Device *devices[] = {new LC709203F(), new LTC2941_BFG(), new MAX1704x_BFG(), new SHTC3(), new MAX31855(), new INA260()};
-Device *devices[] = {new Device()};
+TCA9548AMUX mux;
+Device *devices[] = {new Device(), new LC709203F(), new LTC2941_BFG(), new MAX1704x_BFG(), new SHTC3(), new MAX31855(), new INA260()};
+// Device *devices[] = {new Device()};
 
 void setup()
 {
-    Serial.begin(115200);
+    Serial.begin(9600);
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LOW);
+
+    // mux.begin(Wire);
+    // for (Device *d : devices)
+    // {
+    //     d->begin();
+    // }
+
     // Serial.println("Done setup");
 }
 
@@ -28,9 +35,7 @@ void loop()
     {
         digitalWrite(LED_BUILTIN, HIGH);
         // incoming data comes in as{DeviceStr:RequestsStr}
-        // example: {LC709203F:VP} will get Voltage and Percent from LC709203F device
-        // String s = Serial.readString();
-        // Serial.println(s);
+        // example: {"LC709203F":"VP"} will get Voltage and Percent from LC709203F device
         deserializeJson(doc, Serial);
         JsonObject root = doc.as<JsonObject>();
         for (JsonPair kv : root)
@@ -39,8 +44,7 @@ void loop()
             String k = kv.key().c_str();
             Device *d = getDevice(k);
             String v = kv.value().as<const char *>();
-            // Serial.println("key: " + k + " value: " + v);
-            // for each device, create a nested map of requests and values to be returned
+            // build return packet
             DynamicJsonDocument ret(128);
             ret["D"] = d->D();
             for (char c : v)
@@ -48,9 +52,9 @@ void loop()
                 ret[String(c)] = getValue(d, c);
             }
             serializeJson(ret, Serial); // send return package
+            Serial.write('\n');
         }
         digitalWrite(LED_BUILTIN, LOW);
-        Serial.write('\n');
     }
 }
 

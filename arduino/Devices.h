@@ -39,6 +39,7 @@ class Device
 {
 public:
     Device() { this->_D = "none"; }
+    bool begin() { return true; }
     // void begin();                   // start I2C interface
     String D() { return this->_D; } // Device ID
     float V() { return 0; }         // Voltage (V)
@@ -61,11 +62,16 @@ public:
     LC709203F() : Device()
     {
         this->_D = "LC709203F";
+    }
+
+    bool begin()
+    {
         if (!this->lc.begin())
             ERROR(F("Couldnt find Adafruit LC709203F?\nMake sure a battery is plugged in!"));
         // lc.setThermistorB(3950);
         lc.setPackSize(LC709203F_APA_1000MAH);
         lc.setAlarmVoltage(3.4);
+        return true;
     }
 
     float V() { return lc.cellVoltage(); }
@@ -82,8 +88,13 @@ public:
     LTC2941_BFG() : Device()
     {
         this->_D = "LTC2941";
+    }
+
+    bool begin()
+    {
         this->ltc.initialize();
         ltc2941.setBatteryFullMAh(1000);
+        return true;
     }
 
     float C() { return this->ltc.getmAh(); }
@@ -101,6 +112,10 @@ public:
     MAX1704x_BFG() : Device()
     {
         this->_D = "MAX1704x";
+    }
+
+    bool begin()
+    {
         if (!lipo.begin())
             ERROR(F("MAX17044 not detected. Please check wiring. Freezing."));
         // Quick start restarts the MAX17044 in hopes of getting a more accurate guess for the SOC.
@@ -108,6 +123,7 @@ public:
 
         // We can set an interrupt to alert when the battery SoC gets too low. We can alert at anywhere between 1% - 32%:
         lipo.setThreshold(20); // Set alert threshold to 20%.
+        return true;
     }
 
     float V() { return lipo.getVoltage(); }
@@ -123,12 +139,17 @@ public:
 class TCA9548AMUX
 {
 public:
-    TCA9548AMUX(TwoWire &w)
+    TCA9548AMUX()
     {
         this->_D = "TCA9548A";
+    }
+
+    bool begin(TwoWire &w)
+    {
         // Wire.begin(); // open wire connection
-        this->tca.begin(w);  // can be started without Wire.begin()
-        tca.openAll(); // by default, open all channels. Only mess with this if there are address conflicts
+        this->tca.begin(w); // can be started without Wire.begin()
+        tca.openAll();      // by default, open all channels. Only mess with this if there are address conflicts
+        return true;
     }
 
     void openChannel(uint8_t channel)
@@ -152,9 +173,14 @@ public:
     SHTC3() : Device()
     {
         this->_D = "SHTC3";
+    }
+
+    bool begin()
+    {
         if (!shtc3.begin())
             ERROR(F("Couldn't find SHTC3"));
         // Serial.println("Found SHTC3 sensor");
+        return true;
     }
 
     float T()
@@ -184,10 +210,15 @@ public:
     MAX31855() : Device()
     {
         this->_D = "MAX31855";
+    }
+
+    bool begin()
+    {
         uint8_t MAXDO = 3, MAXCS = 4, MAXCLK = 5;
         this->thermocouple = new Adafruit_MAX31855(MAXDO, MAXCS, MAXCLK);
         if (!this->thermocouple->begin())
             ERROR(F("Couldn't find MAX31855"));
+        return true;
     }
 
     float C()
@@ -208,8 +239,13 @@ public:
     INA260() : Device()
     {
         this->_D = "INA260";
+    }
+
+    bool begin()
+    {
         if (!this->ina.begin())
             ERROR(F("Couldn't find INA260"));
+        return true;
     }
 
     float V() { return this->ina.readBusVoltage(); }
