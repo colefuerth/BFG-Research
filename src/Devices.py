@@ -21,7 +21,7 @@ class Sensor(HID):
         super().__init__()
         self.name = 'Generic Sensor device'
         self.manufacturer = 'generic'
-        self.data = {'V': '', 'I': '', 'C': '', 'P': '', 'T': ''}
+        self.data = {s:'' for s in 'VICPT'}
         self.updstr = ''
 
     def data(self):
