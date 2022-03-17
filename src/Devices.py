@@ -5,7 +5,7 @@ import json
 from time import sleep
 from datetime import datetime, timezone
 
-arduino = serial.Serial(port='COM4', baudrate=115200, timeout=1)
+arduino = serial.Serial(port='COM4', baudrate=115200, timeout=.05)
 
 # callable attributes on sensors
 attributes = {
@@ -30,13 +30,13 @@ class Sensor:
         self.updstr = 'VIC'
 
     def data(self):
-        # arduino.flush()
         sent = f'{{"{self.name}":"{self.updstr}"}}'
         arduino.write(sent.encode('utf-8'))
-        sleep(.05)
+        arduino.flush()
+        # sleep(.05)
         while arduino.inWaiting() == 0:
             print('.', end='')
-            sleep(.05)
+            sleep(.01)
         recv = arduino.readline().decode('utf-8').strip()
         recv = json.loads(recv)
         assert(recv["D"] == self.name)
