@@ -5,7 +5,7 @@ import json
 from time import sleep
 from datetime import datetime, timezone
 
-arduino = serial.Serial(port='COM5', baudrate=9600, timeout=.5)
+arduino = serial.Serial(port='COM4', baudrate=115200, timeout=1)
 
 # callable attributes on sensors
 attributes = {
@@ -26,23 +26,22 @@ class Sensor:
         self.name = 'none'
         self.manufacturer = 'generic'
         self.datadict = {s: '' for s in attributes.keys()}
-        self.updstr = ''.join(attributes.keys())
+        # self.updstr = ''.join(attributes.keys())
+        self.updstr = 'VIC'
 
     def data(self):
+        # arduino.flush()
         sent = f'{{"{self.name}":"{self.updstr}"}}'
-        print('sent: ' + sent)
-        arduino.write(
-            bytes(sent, encoding='utf-8'))
-        sleep(0.1)
-        recv = arduino.readline()
-        print(recv)
-        recv = str(arduino.readline(), encoding='utf-8')
-        print('recv: ' + recv)
-        recv = json.load(recv)
-        assert(recv["D"] == self.updstr)
-        recv.pop('D')
+        arduino.write(sent.encode('utf-8'))
+        sleep(.05)
+        while arduino.inWaiting() == 0:
+            print('.', end='')
+            sleep(.05)
+        recv = arduino.readline().decode('utf-8').strip()
+        recv = json.loads(recv)
+        assert(recv["D"] == self.name)
         self.datadict.update(recv)
-        return [self.name, *[self.datadict[key] for key in updstr], datetime.now(timezone.utc).__str__()]
+        return [self.datadict[key] for key in self.updstr]
 
     def __str__(self):
         return f'{self.name} ({self.manufacturer})'

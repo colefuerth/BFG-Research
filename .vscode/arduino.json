@@ -1,9 +1,8 @@
 {
     "sketch": "arduino\\arduino.ino",
-    "port": "COM5",
-    "board": "arduino:avr:nano",
+    "port": "COM4",
+    "board": "arduino:avr:micro",
     "output": "bin",
     "debugger": "jlink",
-    "programmer": "arduino:avrispmkii",
-    "configuration": "cpu=atmega328old"
+    "programmer": "arduino:avrispmkii"
 }

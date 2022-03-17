@@ -15,7 +15,7 @@ Device *devices[] = {new Device(), new LC709203F(), new LTC2941_BFG(), new MAX17
 
 void setup()
 {
-    Serial.begin(9600);
+    Serial.begin(115200);
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LOW);
 
@@ -52,7 +52,6 @@ void loop()
                 ret[String(c)] = getValue(d, c);
             }
             serializeJson(ret, Serial); // send return package
-            Serial.write('\n');
         }
         digitalWrite(LED_BUILTIN, LOW);
     }
