@@ -55,6 +55,7 @@ void loop()
         }
         digitalWrite(LED_BUILTIN, LOW);
     }
+    delay(1);   // slow the processor down a little
 }
 
 Device *getDevice(String _D)

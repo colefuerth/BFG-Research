@@ -2,11 +2,11 @@
 # arduino-cli install instructions https://siytek.com/arduino-cli-raspberry-pi/
 
 AC = arduino-cli
-# USB = /dev/ttyACM0
-USB = COM5
+USB = /dev/ttyACM0
+# USB = COM5
 MAIN = arduino
-BOARD = arduino:avr:nano:cpu=atmega328old
-# BOARD = arduino:avr:micro
+# BOARD = arduino:avr:nano:cpu=atmega328old
+BOARD = arduino:avr:micro
 PROGRAMMER = avrispmkii
 
 # LIST PROGRAMMERS
@@ -34,10 +34,10 @@ libraries:
 # 	$(AC) board attach -b $(BOARD) -p $(USB) $(MAIN)
 
 build:
-	$(AC) compile -v --fqbn $(BOARD) $(MAIN)
+	$(AC) compile --fqbn $(BOARD) $(MAIN)
 
 upload:
-	$(AC) upload -v --port $(USB) --fqbn $(BOARD) --programmer $(PROGRAMMER) $(MAIN)
+	$(AC) upload --port $(USB) --fqbn $(BOARD) --programmer $(PROGRAMMER) $(MAIN)
 
 clean:
 	$(AC) cache clean -v
