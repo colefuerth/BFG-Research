@@ -5,11 +5,22 @@ import serial
 import time
 from datetime import datetime
 
+Devices = {
+    'LC709203F': 'VPT',  # BFG
+    'LTC2941': 'CP',     # BFG
+    'MAX17043': 'VP',    # BFG
+    'SHTC3': 'TH',       # Temp Humidity
+    'MAX31855': 'C',     # Thermocouple Amplifier
+    'INA260': 'VIW'      # Current, Voltage, Power
+}
+
+
 def main():
 
-    Sensors = [Sensor()]
+    sensors = {k: Sensor(k, v) for k, v in Devices.items()}
+    hz = 5
 
-    for s in Sensors:
+    for s in sensors:
         header = ['Device', *[attributes[k] for k in s.updstr], 'Timestamp']
         print(','.join(header))
         start = time.time()
@@ -17,7 +28,8 @@ def main():
         end = time.time()
         print(f"{s.name} took {end-start} seconds")
         # writer.writerow(s.data('VICPTHW'))
-        time.sleep(0.05)
+        time.sleep(1/hz)
+
 
 if __name__ == '__main__':
     main()
