@@ -4,6 +4,7 @@ import os
 import serial
 import time
 from datetime import datetime
+from itertools import count
 
 Devices = {
     'LC709203F': 'VPT',  # BFG
@@ -14,19 +15,17 @@ Devices = {
     'INA260': 'VIW'      # Current, Voltage, Power
 }
 
-
 def main():
-
     sensors = {k: Sensor(k, v) for k, v in Devices.items()}
     hz = 5
 
-    for s in sensors:
-        header = ['Device', *[attributes[k] for k in s.updstr], 'Timestamp']
-        print(','.join(header))
-        start = time.time()
+    header = ['Device', *[attributes[k] for k in s.updstr], 'Timestamp']
+    print(','.join(header))
+    sendpayload(sensors)
+    c = count(0)
+    while next(c) < len(sensors):
+        # need to recv packet and then process it
         print(','.join([s.name, *s.data(), datetime.now(timezone.utc).__str__()]))
-        end = time.time()
-        print(f"{s.name} took {end-start} seconds")
         # writer.writerow(s.data('VICPTHW'))
         time.sleep(1/hz)
 

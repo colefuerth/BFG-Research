@@ -51,7 +51,7 @@ def sendpayload(request) -> None:
 
 def recvpayload() -> dict:
     if arduino.inWaiting() == 0:
-        yield None
+        return None
     recv = arduino.readline().decode('utf-8')
     recv = json.loads(recv)
-    yield recv
+    return recv
