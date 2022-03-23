@@ -10,7 +10,7 @@ StaticJsonDocument<128> doc; // json document for read/write, declared on the st
 // here to make sure that devices do indeed compile;
 // if they are not called in main, they will not compile
 TCA9548AMUX mux;
-Device *devices[] = {new Device(), new LC709203F(), new LTC2941_BFG(), new MAX1704x_BFG(), new SHTC3(), new MAX31855(), new INA260()};
+Device *devices[] = {new LC709203F(), new LTC2941_BFG(), new MAX1704x_BFG(), new SHTC3(), new MAX31855(), new INA260()};
 // Device *devices[] = {new Device()};
 
 void setup()
@@ -25,7 +25,7 @@ void setup()
     //     d->begin();
     // }
 
-    // Serial.println("Done setup");
+    LOG(F("Done setup"));
 }
 
 void loop()

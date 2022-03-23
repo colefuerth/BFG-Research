@@ -18,11 +18,18 @@
 
 // --------------- UTILITY FUNCTIONS ---------------
 
+
+void LOG(String msg)
+{
+    String s = String(F("{\"D\":\"LOG\",\"M\":\"")) + msg + String(F("\"}"));
+    Serial.println(s);
+}
+
 // If there is a major fault, display msg on serial and flash LED
 // all messages should be PROGMEM strings, to save stack space
 void ERROR(const __FlashStringHelper *msg)
 {
-    Serial.println(msg);
+    LOG(msg);
     pinMode(LED_BUILTIN, OUTPUT);
     while (1)
     {

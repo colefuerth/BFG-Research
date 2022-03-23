@@ -67,3 +67,11 @@ JSON requests will be one key/value pair. The key will be the device being queri
 ### Response JSON (Arduino -> Pi)
 
 Output JSON will be will be a dict of dictionary of key/value pairs. Each root query key is the device, to identify the device being echoed. The value data being sent will be the key/value pairs for queried data, for each key/device.
+
+### LOGGING/MESSAGE PACKETS
+
+Payloads sent from the Arduino to the Pi can be marked as 'logging messages', which will be displayed to the terminal. This is useful for debugging, and for getting a sense of what is going on.
+
+Messages are JSON payloads formatted as: `{"D":"LOG","M":"<msg>"}`.
+
+Messages can be sent on the Arduino by calling the `LOG(String msg)` function.

@@ -27,45 +27,31 @@ class Sensor:
         self.updstr = updstr
         self.datadict = {s: '' for s in self.updstr}
 
-    def data(self):
-        sent = f'{{"{self.name}":"{self.updstr}"}}'
-        arduino.write(sent.encode('utf-8'))
-        arduino.flush()
-        while arduino.inWaiting() == 0:
-            print('.', end='')
-            sleep(.01)
-        recv = arduino.readline().decode('utf-8')
-        recv = json.loads(recv)
-        assert(recv["D"] == self.name)
-        self.datadict.update(recv)
+    def update(self, data:dict) -> None:
+        assert(data["D"] == self.name)
+        self.datadict.update(data)
+
+    def data(self) -> list[str]:
         return [self.datadict[key] for key in self.updstr]
 
-    def __str__(self):
-        return f'{self.name}:{self.updstr}'
+    def __str__(self) -> str:
+        return f'"{self.name}":"{self.updstr}"'
 
 
-# class LC709203F(Sensor):
-#     # Specific class for Sensor-1
-#     def __init__(self):
-#         super().__init__()
-#         self.name = 'LC709203F'
-#         self.manufacturer = 'AdaFruit'
-#         self.updstr = 'VPT'
+# accepts both a sensor, or a dict of sensors
+def sendpayload(request) -> None:
+    msg = "{{"
+    if isinstance(request, dict):
+        msg += ','.join(request.values())
+    else:
+        msg += str(request)
+    msg += "}}"
+    arduino.write(msg.encode('utf-8'))
+    arduino.flush()
 
-
-# class LTC2941(Sensor):
-#     # Specific class for Sensor-2
-#     def __init__(self):
-#         super().__init__()
-#         self.name = 'LTC2941'
-#         self.manufacturer = 'Analog Device'
-#         self.updstr = 'CP'
-
-
-# class MAX17043(Sensor):
-#     # Specific class for Sensor-3
-#     def __init__(self):
-#         super().__init__()
-#         self.name = 'MAX17043'
-#         self.manufacturer = 'Maxim Integrated'
-#         self.updstr = 'VP'
+def recvpayload() -> dict:
+    if arduino.inWaiting() == 0:
+        return None
+    recv = arduino.readline().decode('utf-8')
+    recv = json.loads(recv)
+    return recv
