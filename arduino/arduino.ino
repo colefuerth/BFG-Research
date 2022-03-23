@@ -9,8 +9,9 @@ StaticJsonDocument<128> doc; // json document for read/write, declared on the st
 // array of devices
 // here to make sure that devices do indeed compile;
 // if they are not called in main, they will not compile
-TCA9548AMUX mux;
-Device *devices[] = {new LC709203F(), new LTC2941_BFG(), new MAX1704x_BFG(), new SHTC3(), new MAX31855(), new INA260()};
+//TCA9548AMUX mux;
+Device *devices[] = {new Device(), new INA219()};
+// , new LC709203F(), new LTC2941_BFG(), new MAX1704x_BFG(), new SHTC3(), new MAX31855(), new INA260()
 // Device *devices[] = {new Device()};
 
 void setup()
@@ -18,12 +19,16 @@ void setup()
     Serial.begin(115200);
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LOW);
+    while (!Serial) delay(1);
 
     // mux.begin(Wire);
     // for (Device *d : devices)
     // {
     //     d->begin();
     // }
+    // {"LC709203F":"V"}
+    // {"MAX17043":"V"}
+    devices[1]->begin();
 
     LOG(F("Done setup"));
 }
@@ -52,6 +57,7 @@ void loop()
                 ret[String(c)] = getValue(d, c);
             }
             serializeJson(ret, Serial); // send return package
+            Serial.print('\n');
         }
         digitalWrite(LED_BUILTIN, LOW);
     }

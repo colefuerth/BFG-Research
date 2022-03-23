@@ -29,6 +29,7 @@ libraries:
 	$(AC) lib install "Adafruit SHTC3 Library"
 	$(AC) lib install "Adafruit MAX31855 library"
 	$(AC) lib install "Adafruit INA260 Library"
+	$(AC) lib install "Adafruit INA219"
 
 # attach:
 # 	$(AC) board attach -b $(BOARD) -p $(USB) $(MAIN)

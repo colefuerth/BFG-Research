@@ -5,7 +5,7 @@ import json
 from time import sleep
 from datetime import datetime, timezone
 
-arduino = serial.Serial(port='COM4', baudrate=115200, timeout=.05)
+arduino = serial.Serial(port='COM7', baudrate=115200, timeout=.05)
 
 # callable attributes on sensors
 attributes = {
@@ -22,7 +22,7 @@ attributes = {
 class Sensor:
     # Generic class to interface with Sensor devices
     # this will provide a universal interface for data collecton between the three different Sensor devices
-    def __init__(name, updstr):
+    def __init__(self, name, updstr):
         self.name = name
         self.updstr = updstr
         self.datadict = {s: '' for s in self.updstr}
@@ -31,7 +31,7 @@ class Sensor:
         assert(data["D"] == self.name)
         self.datadict.update(data)
 
-    def data(self) -> list[str]:
+    def data(self) -> list:
         return [self.datadict[key] for key in self.updstr]
 
     def __str__(self) -> str:
@@ -40,12 +40,13 @@ class Sensor:
 
 # accepts both a sensor, or a dict of sensors
 def sendpayload(request) -> None:
-    msg = "{{"
+    msg = "{"
     if isinstance(request, dict):
-        msg += ','.join(request.values())
+        msg += ','.join([str(v) for v in request.values()])
     else:
         msg += str(request)
-    msg += "}}"
+    msg += "}"
+    print(msg)
     arduino.write(msg.encode('utf-8'))
     arduino.flush()
 
@@ -53,5 +54,6 @@ def recvpayload() -> dict:
     if arduino.inWaiting() == 0:
         return None
     recv = arduino.readline().decode('utf-8')
+    print(recv)
     recv = json.loads(recv)
     return recv
