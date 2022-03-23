@@ -1,6 +1,6 @@
 {
     "sketch": "arduino\\arduino.ino",
-    "port": "COM4",
+    "port": "COM7",
     "board": "arduino:avr:micro",
     "output": "bin",
     "debugger": "jlink",
