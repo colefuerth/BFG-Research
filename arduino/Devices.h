@@ -21,9 +21,8 @@
 
 void LOG(String msg)
 {
-    // String s = String(F("{\"D\":\"LOG\",\"M\":\"")) + msg + String(F("\"}"));
-    // Serial.println(s);
-    Serial.println("{\"D\":\"LOG\",\"M\":\"" + msg + "\"}");
+    String s = String(F("{\"D\":\"LOG\",\"M\":\"")) + msg + String(F("\"}"));
+    Serial.println(s);
 }
 
 // If there is a major fault, display msg on serial and flash LED
