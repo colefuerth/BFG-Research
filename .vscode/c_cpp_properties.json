@@ -35,7 +35,15 @@
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
-            ]
+            ],
+            "browse": {
+                "path": [
+                    "~/Arduino/arduino-1.8.15/libraries",
+                    "~/Arduino/libraries",
+                    "~/Arduino/arduino-1.8.15/hardware/arduino/avr/libraries",
+                    "${workspaceFolder}/**"
+                ]
+            }
         },
         {
             "name": "Arduino",
