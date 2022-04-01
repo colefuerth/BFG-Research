@@ -18,4 +18,26 @@ Testing done on Match 23, 2022.
 - DO NOT connect battery straight to it. duh
 - ONLY measures current (I)
 
-## 
+## SHTC3 Temperature and Humidity Sensor
+
+- temperature and humidity work fine
+
+## MAX31855
+
+- **USES SOFTWARE SERIAL, *NOT* I2C**
+- SoftSerial pins are CLK = 4, CS = 5, DO = 6 on the Micro.
+- T() calls thermocouple temp
+- C() calls internal temp (shouldn't be used in production, no reason for it)
+
+## LTC2941
+
+- not here yet
+
+## INA260
+
+- For high side power measurement, VIN+- are used as an inline current sensor, and the voltage reading is read between VIN+ and GND. (TESTED)
+- For low side power measurement, VIN+- are used as an inline current sensor, and the voltage reading is read between VIN- and VBus. (UNTESTED)
+
+## TCA9548A Multiplexer
+
+- Open all channels right away

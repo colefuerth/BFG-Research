@@ -10,12 +10,12 @@
 #include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
 
 // remaining libraries
-#include <TCA9548A.h>
 #include <Adafruit_SHTC3.h>
 #include <SPI.h> // for thermocouple softserial
 #include <Adafruit_MAX31855.h>
 #include <Adafruit_INA260.h>
 #include <Adafruit_INA219.h>
+#include <TCA9548A.h> // mux
 
 // --------------- UTILITY FUNCTIONS ---------------
 
@@ -26,9 +26,10 @@ void LOG(String msg)
 
 // If there is a major fault, display msg on serial and flash LED
 // all messages should be PROGMEM strings, to save stack space
-void ERROR(const __FlashStringHelper *msg)
+void ERROR(String msg)
 {
-    LOG(msg);
+    Serial.println("{\"D\":\"ERROR\",\"M\":\"" + msg + "\"}");
+    // LOG(msg);
     pinMode(LED_BUILTIN, OUTPUT);
     while (1)
     {
@@ -44,7 +45,29 @@ void ERROR(const __FlashStringHelper *msg)
 class Device
 {
 public:
-    Device() { this->_D = "none"; }
+    static TCA9548A *mux;
+    static uint8_t channels;
+    Device(int channel)
+    {
+        this->_D = "none";
+        this->_channel = channel;
+        if (channel >= 0)
+            channels &= 0xFF ^ (1 << channel);
+    }
+    void open()
+    {
+        if (_channel >= 0)
+            Device::mux->openChannel(_channel);
+    }
+    void close()
+    {
+        if (_channel >= 0)
+            Device::mux->closeChannel(_channel);
+    }
+    static void defaultmux()
+    {
+        Device::mux->writeRegister(Device::channels);
+    }
     virtual bool begin() { return true; }
     // void begin();                   // start I2C interface
     virtual String D() { return this->_D; } // Device ID
@@ -58,6 +81,7 @@ public:
     // int S() { return 0; }           // state, 0=discharging, 1=charging
 protected:
     String _D; // Device ID
+    uint8_t _channel;
 };
 
 // ------------------ BFG DEVICES ------------------
@@ -65,13 +89,14 @@ protected:
 class LC709203F : public Device
 {
 public:
-    LC709203F()
+    LC709203F(int channel = -1) : Device(channel)
     {
         this->_D = "LC709203F";
     }
 
     bool begin()
     {
+        // requires Wire pre began
         if (!this->lc.begin())
             ERROR(F("Couldnt find Adafruit LC709203F?\nMake sure a battery is plugged in!"));
         lc.setThermistorB(3950);
@@ -96,7 +121,7 @@ protected:
 class LTC2941_BFG : public Device
 {
 public:
-    LTC2941_BFG()
+    LTC2941_BFG(int channel = -1) : Device(channel)
     {
         this->_D = "LTC2941";
     }
@@ -121,18 +146,14 @@ SFE_MAX1704X lipo(MAX1704X_MAX17043);
 class MAX1704x_BFG : public Device
 {
 public:
-    MAX1704x_BFG()
+    MAX1704x_BFG(int channel = -1) : Device(channel)
     {
         this->_D = "MAX17043";
     }
 
     bool begin()
     {
-        if (TWCR == 0) // do this check so that Wire only gets initialized once
-        {
-            Wire.begin();
-        }
-        if (!lipo.begin())
+        if (!lipo.begin(Wire))
             ERROR(F("MAX17043 not detected. Please check wiring. Freezing."));
         // Quick start restarts the MAX17044 in hopes of getting a more accurate guess for the SOC.
         lipo.quickStart();
@@ -153,42 +174,56 @@ public:
 // ------------------ REMAINING I2C DEVICES ------------------
 
 // TODO: add more info to this class
-class TCA9548AMUX
-{
-public:
-    TCA9548AMUX()
-    {
-        this->_D = "TCA9548A";
-    }
+// class TCA9548AMUX
+// {
+// public:
+//     TCA9548AMUX()
+//     {
+//         this->_D = "TCA9548A";
+//     }
 
-    bool begin(TwoWire &w)
-    {
-        // Wire.begin(); // open wire connection
-        this->tca.begin(w); // can be started without Wire.begin()
-        tca.openAll();      // by default, open all channels. Only mess with this if there are address conflicts
-        LOG("TCA9548A initialized");
-        return true;
-    }
+//     bool begin()
+//     {
+//         if (TWCR == 0) // do this check so that Wire only gets initialized once
+//         {
+//             Wire.begin();
+//             LOG(F("Wire initialized"));
+//         }
+//         this->tca.begin(); // can be started without Wire.begin()
+//         tca.openAll();     // by default, open all channels. Only mess with this if there are address conflicts
+//         LOG("TCA9548A initialized");
+//         return true;
+//     }
 
-    void openChannel(uint8_t channel)
-    {
-        this->tca.openChannel(channel);
-    }
+//     void openChannel(uint8_t channel)
+//     {
+//         this->tca.openChannel(channel);
+//     }
 
-    void closeChannel(uint8_t channel)
-    {
-        this->tca.closeChannel(channel);
-    }
+//     void closeChannel(uint8_t channel)
+//     {
+//         this->tca.closeChannel(channel);
+//     }
 
-private:
-    TCA9548A tca; // address can be passed into the constructor
-    String _D;
-};
+//     void closeAll()
+//     {
+//         this->tca.closeAll();
+//     }
+
+//     void openAll()
+//     {
+//         this->tca.openAll();
+//     }
+
+// private:
+//     TCA9548A tca; // address can be passed into the constructor
+//     String _D;
+// };
 
 class SHTC3 : public Device
 {
 public:
-    SHTC3()
+    SHTC3() : Device(-1) {}
     {
         this->_D = "SHTC3";
     }
@@ -226,37 +261,45 @@ private:
 class MAX31855 : public Device
 {
 public:
-    MAX31855()
+    MAX31855(int channel = -1) : Device(channel)
     {
         this->_D = "MAX31855";
     }
 
     bool begin()
     {
-        uint8_t MAXDO = 3, MAXCS = 4, MAXCLK = 5;
-        this->thermocouple = new Adafruit_MAX31855(MAXDO, MAXCS, MAXCLK);
-        if (!this->thermocouple->begin())
+        delay(100); // max chip needs a second to stabilize
+        if (!this->tc.begin())
             ERROR(F("Couldn't find MAX31855"));
         LOG("MAX31855 initialized");
         return true;
     }
 
-    float C()
+    float T()
     {
-        double c = this->thermocouple->readCelsius();
+        double c = this->tc.readCelsius();
         if (isnan(c))
             ERROR(F("Something wrong with thermocouple!"));
         return c;
     }
 
+    float C()
+    {
+        double c = this->tc.readInternal();
+        if (isnan(c))
+            ERROR(F("Something wrong with internal MAX31855 temp!"));
+        return c;
+    }
+
 private:
-    Adafruit_MAX31855 *thermocouple;
+    uint8_t MAXCLK = 4, MAXCS = 5, MAXDO = 6;
+    Adafruit_MAX31855 tc = Adafruit_MAX31855(MAXCLK, MAXCS, MAXDO);
 };
 
 class INA260 : public Device
 {
 public:
-    INA260()
+    INA260(int channel = -1) : Device(channel)
     {
         this->_D = "INA260";
     }
@@ -269,7 +312,7 @@ public:
         return true;
     }
 
-    float V() { return this->ina.readBusVoltage(); }
+    float V() { return this->ina.readBusVoltage() / 1000.0; }
     float I() { return this->ina.readCurrent(); }
     float W() { return this->ina.readPower(); }
 
@@ -280,7 +323,7 @@ protected:
 class INA219 : public Device
 {
 public:
-    INA219()
+    INA219(int channel = -1) : Device(channel)
     {
         this->_D = "INA219";
     }

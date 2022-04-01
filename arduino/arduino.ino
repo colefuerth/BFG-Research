@@ -3,15 +3,16 @@
 
 #include "ArduinoJson-v6.19.2.h"
 #include "Devices.h"
+// #include <TCA9548A.h> // mux
 
 StaticJsonDocument<128> doc; // json document for read/write, declared on the stack
 
 // array of devices
-// here to make sure that devices do indeed compile;
-// if they are not called in main, they will not compile
-//TCA9548AMUX mux;
-Device *devices[] = {new Device(), new INA219()};
-// , new LC709203F(), new LTC2941_BFG(), new MAX1704x_BFG(), new SHTC3(), new MAX31855(), new INA260()
+// If passed a multiplexer channel, then the multiplexer will only allow the device to communicate on that channel when absolutely necessary
+Device::mux = new TCA9548A(0x71); // address of mux
+Device::channels = 0xFF;    // default mux state
+Device *devices[] = {new Device(), new MAX31855(), new SHTC3()};
+// , new LC709203F(), new LTC2941_BFG(), new INA219(), new SHTC3(), new MAX1704x_BFG(), new INA260(), new LC709203F(), 
 // Device *devices[] = {new Device()};
 
 void setup()
@@ -19,16 +20,23 @@ void setup()
     Serial.begin(115200);
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LOW);
-    while (!Serial) delay(1);
+    while (!Serial)
+        delay(1);
 
-    // mux.begin(Wire);
-    // for (Device *d : devices)
-    // {
-    //     d->begin();
-    // }
-    // {"LC709203F":"V"}
-    // {"MAX17043":"V"}
-    devices[1]->begin();
+    if (TWCR == 0) // do this check so that Wire only gets initialized once
+    {
+        Wire.begin();
+        LOG(F("Wire initialized"));
+    }
+
+    // initialize mux
+    Device::mux->begin();
+    Device::mux->writeRegister(Device::channels); // set base state
+    LOG(F("Mux initialized"));
+    for (Device *d : devices)
+    {
+        d->begin();
+    }
 
     LOG(F("Done setup"));
 }
@@ -57,11 +65,11 @@ void loop()
                 ret[String(c)] = getValue(d, c);
             }
             serializeJson(ret, Serial); // send return package
-            Serial.print('\n');
+            Serial.print('\n');         // delimiter between packets
         }
         digitalWrite(LED_BUILTIN, LOW);
     }
-    delay(1);   // slow the processor down a little
+    delay(1); // slow the processor down a little
 }
 
 Device *getDevice(String _D)

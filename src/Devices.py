@@ -5,7 +5,7 @@ import json
 from time import sleep
 from datetime import datetime, timezone
 
-arduino = serial.Serial(port='COM7', baudrate=115200, timeout=.05)
+arduino = serial.Serial(port='COM5', baudrate=115200, timeout=.05)  
 
 # callable attributes on sensors
 attributes = {
@@ -40,6 +40,9 @@ class Sensor:
 
 # accepts both a sensor, or a dict of sensors
 def sendpayload(request) -> None:
+    if arduino is None:
+        print('arduino not initialized')
+        return
     msg = "{"
     if isinstance(request, dict):
         msg += ','.join([str(v) for v in request.values()])
@@ -51,9 +54,12 @@ def sendpayload(request) -> None:
     arduino.flush()
 
 def recvpayload() -> dict:
+    if arduino is None:
+        print('arduino not initialized')
+        return
     if arduino.inWaiting() == 0:
         return None
-    recv = arduino.readline().decode('utf-8')
+    recv = arduino.readline().decode('utf-8').strip()
     print(recv)
     recv = json.loads(recv)
     return recv

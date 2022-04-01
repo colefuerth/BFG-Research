@@ -37,6 +37,9 @@ libraries:
 build:
 	$(AC) compile --fqbn $(BOARD) $(MAIN)
 
+vbuild:
+	$(AC) compile -v --fqbn $(BOARD) $(MAIN)
+
 upload:
 	$(AC) upload --port $(USB) --fqbn $(BOARD) --programmer $(PROGRAMMER) $(MAIN)
 
