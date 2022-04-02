@@ -7,12 +7,14 @@
 
 StaticJsonDocument<128> doc; // json document for read/write, declared on the stack
 
+// these two are ESSENTIAL for the use of the multiplexer `Device` backend
+TCA9548A Device::mux(0x71);      // address of mux
+uint8_t Device::channels = 0xFF; // default mux state
+
 // array of devices
 // If passed a multiplexer channel, then the multiplexer will only allow the device to communicate on that channel when absolutely necessary
-Device::mux = new TCA9548A(0x71); // address of mux
-Device::channels = 0xFF;    // default mux state
 Device *devices[] = {new Device(), new MAX31855(), new SHTC3()};
-// , new LC709203F(), new LTC2941_BFG(), new INA219(), new SHTC3(), new MAX1704x_BFG(), new INA260(), new LC709203F(), 
+// , new LC709203F(), new LTC2941_BFG(), new INA219(), new SHTC3(), new MAX1704x_BFG(), new INA260(), new LC709203F(),
 // Device *devices[] = {new Device()};
 
 void setup()
@@ -30,8 +32,8 @@ void setup()
     }
 
     // initialize mux
-    Device::mux->begin();
-    Device::mux->writeRegister(Device::channels); // set base state
+    Device::mux.begin();
+    Device::mux.writeRegister(Device::channels); // set base state
     LOG(F("Mux initialized"));
     for (Device *d : devices)
     {

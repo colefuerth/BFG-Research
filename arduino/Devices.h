@@ -45,29 +45,20 @@ void ERROR(String msg)
 class Device
 {
 public:
-    static TCA9548A *mux;
+    static TCA9548A mux;
     static uint8_t channels;
-    Device(int channel)
+    Device(int channel = -1)
     {
         this->_D = "none";
         this->_channel = channel;
         if (channel >= 0)
             channels &= 0xFF ^ (1 << channel);
     }
-    void open()
-    {
-        if (_channel >= 0)
-            Device::mux->openChannel(_channel);
-    }
-    void close()
-    {
-        if (_channel >= 0)
-            Device::mux->closeChannel(_channel);
-    }
     static void defaultmux()
     {
-        Device::mux->writeRegister(Device::channels);
+        Device::mux.writeRegister(Device::channels);
     }
+
     virtual bool begin() { return true; }
     // void begin();                   // start I2C interface
     virtual String D() { return this->_D; } // Device ID
@@ -82,6 +73,27 @@ public:
 protected:
     String _D; // Device ID
     uint8_t _channel;
+
+    void open()
+    {
+        if (_channel >= 0)
+            Device::mux.openChannel(_channel);
+    }
+
+    void close()
+    {
+        if (_channel >= 0)
+            Device::mux.closeChannel(_channel);
+    }
+
+    template <typename Func>
+    float withmux(Func f)
+    {
+        this->open();
+        float ret = f();
+        this->close();
+        return ret;
+    }
 };
 
 // ------------------ BFG DEVICES ------------------
@@ -96,6 +108,7 @@ public:
 
     bool begin()
     {
+        this->open();
         // requires Wire pre began
         if (!this->lc.begin())
             ERROR(F("Couldnt find Adafruit LC709203F?\nMake sure a battery is plugged in!"));
@@ -103,16 +116,30 @@ public:
         lc.setPackSize(LC709203F_APA_500MAH);
         lc.setAlarmVoltage(3.4);
         LOG("LC709203F initialized");
+        this->close();
         return true;
     }
 
     float V()
     {
-        Serial.println(lc.cellVoltage(), 3);
-        return lc.cellVoltage();
+        // this->open();
+        // // Serial.println(lc.cellVoltage(), 3);
+        // float v = lc.cellVoltage();
+        // this->close();
+        // return v;
+        return this->withmux([&]()
+                             { return lc.cellVoltage(); });
     }
-    float P() { return lc.cellPercent(); }
-    float T() { return lc.getCellTemperature(); }
+    float P()
+    {
+        return this->withmux([&]()
+                             { return lc.cellPercent(); });
+    }
+    float T()
+    {
+        return this->withmux([&]()
+                             { return lc.getCellTemperature(); });
+    }
 
 protected:
     Adafruit_LC709203F lc;
@@ -128,14 +155,23 @@ public:
 
     bool begin()
     {
-        this->ltc.initialize();
-        ltc2941.setBatteryFullMAh(1000);
-        LOG("LTC2941 initialized");
-        return true;
+        return this->withmux([&]()
+                             {
+            this->ltc.initialize();
+            ltc2941.setBatteryFullMAh(1000);
+            LOG("LTC2941 initialized"); return true; });
     }
 
-    float C() { return this->ltc.getmAh(); }
-    float P() { return this->ltc.getPercent(); }
+    float C()
+    {
+        return this->withmux([&]()
+                             { return this->ltc.getmAh(); });
+    }
+    float P()
+    {
+        return this->withmux([&]()
+                             { return this->ltc.getPercent(); });
+    }
 
 protected:
     LTC2941 ltc = ltc2941;
@@ -153,19 +189,29 @@ public:
 
     bool begin()
     {
-        if (!lipo.begin(Wire))
-            ERROR(F("MAX17043 not detected. Please check wiring. Freezing."));
-        // Quick start restarts the MAX17044 in hopes of getting a more accurate guess for the SOC.
-        lipo.quickStart();
+        return this->withmux([&]()
+                             {
+            if (!lipo.begin(Wire))
+                ERROR(F("MAX17043 not detected. Please check wiring. Freezing."));
+            // Quick start restarts the MAX17044 in hopes of getting a more accurate guess for the SOC.
+            lipo.quickStart();
 
-        // We can set an interrupt to alert when the battery SoC gets too low. We can alert at anywhere between 1% - 32%:
-        lipo.setThreshold(20); // Set alert threshold to 20%.
-        LOG("MAX17043 initialized");
-        return true;
+            // We can set an interrupt to alert when the battery SoC gets too low. We can alert at anywhere between 1% - 32%:
+            lipo.setThreshold(20); // Set alert threshold to 20%.
+            LOG("MAX17043 initialized");
+            return true; });
     }
 
-    float V() { return lipo.getVoltage(); }
-    float P() { return lipo.getSOC(); }
+    float V()
+    {
+        return this->withmux([&]()
+                             { return lipo.getVoltage(); });
+    }
+    float P()
+    {
+        return this->withmux([&]()
+                             { return lipo.getSOC(); });
+    }
 
     // protected:
     // SFE_MAX1704X lipo(MAX1704X_MAX17043); // Create a MAX17043 object
@@ -173,79 +219,38 @@ public:
 
 // ------------------ REMAINING I2C DEVICES ------------------
 
-// TODO: add more info to this class
-// class TCA9548AMUX
-// {
-// public:
-//     TCA9548AMUX()
-//     {
-//         this->_D = "TCA9548A";
-//     }
-
-//     bool begin()
-//     {
-//         if (TWCR == 0) // do this check so that Wire only gets initialized once
-//         {
-//             Wire.begin();
-//             LOG(F("Wire initialized"));
-//         }
-//         this->tca.begin(); // can be started without Wire.begin()
-//         tca.openAll();     // by default, open all channels. Only mess with this if there are address conflicts
-//         LOG("TCA9548A initialized");
-//         return true;
-//     }
-
-//     void openChannel(uint8_t channel)
-//     {
-//         this->tca.openChannel(channel);
-//     }
-
-//     void closeChannel(uint8_t channel)
-//     {
-//         this->tca.closeChannel(channel);
-//     }
-
-//     void closeAll()
-//     {
-//         this->tca.closeAll();
-//     }
-
-//     void openAll()
-//     {
-//         this->tca.openAll();
-//     }
-
-// private:
-//     TCA9548A tca; // address can be passed into the constructor
-//     String _D;
-// };
-
 class SHTC3 : public Device
 {
 public:
-    SHTC3() : Device(-1) {}
+    SHTC3() : Device(-1)
     {
         this->_D = "SHTC3";
     }
 
     bool begin()
     {
-        if (!shtc3.begin())
-            ERROR(F("Couldn't find SHTC3"));
-        // Serial.println("Found SHTC3 sensor");
-        LOG("SHTC3 initialized");
-        return true;
+        return this->withmux([&]()
+                             {
+            if (!shtc3.begin())
+                ERROR(F("Couldn't find SHTC3"));
+            // Serial.println("Found SHTC3 sensor");
+            LOG("SHTC3 initialized");
+            return true; });
     }
 
     float T()
     {
-        this->_update();
-        return this->temp.temperature;
+        return this->withmux([&]()
+                             {
+            this->_update();
+            return this->temp.temperature; });
     }
     float H()
     {
-        this->_update();
-        return this->humidity.relative_humidity;
+        return this->withmux([&]()
+                             {
+            this->_update();
+            return this->humidity.relative_humidity; });
     }
 
 private:
@@ -268,27 +273,33 @@ public:
 
     bool begin()
     {
-        delay(100); // max chip needs a second to stabilize
-        if (!this->tc.begin())
-            ERROR(F("Couldn't find MAX31855"));
-        LOG("MAX31855 initialized");
-        return true;
+        return this->withmux([&]()
+                             {
+            delay(100); // max chip needs a second to stabilize
+            if (!this->tc.begin())
+                ERROR(F("Couldn't find MAX31855"));
+            LOG("MAX31855 initialized");
+            return true; });
     }
 
     float T()
     {
-        double c = this->tc.readCelsius();
-        if (isnan(c))
-            ERROR(F("Something wrong with thermocouple!"));
-        return c;
+        return this->withmux([&]()
+                             {
+            double c = this->tc.readCelsius();
+            if (isnan(c))
+                ERROR(F("Something wrong with thermocouple!"));
+            return c; });
     }
 
     float C()
     {
-        double c = this->tc.readInternal();
-        if (isnan(c))
-            ERROR(F("Something wrong with internal MAX31855 temp!"));
-        return c;
+        return this->withmux([&]()
+                             {
+            double c = this->tc.readInternal();
+            if (isnan(c))
+                ERROR(F("Something wrong with internal MAX31855 temp!"));
+            return c; });
     }
 
 private:
@@ -306,15 +317,29 @@ public:
 
     bool begin()
     {
-        if (!this->ina.begin())
-            ERROR(F("Couldn't find INA260"));
-        LOG("INA260 initialized");
-        return true;
+        return this->withmux([&]()
+                             {
+            if (!this->ina.begin())
+                ERROR(F("Couldn't find INA260"));
+            LOG("INA260 initialized");
+            return true; });
     }
 
-    float V() { return this->ina.readBusVoltage() / 1000.0; }
-    float I() { return this->ina.readCurrent(); }
-    float W() { return this->ina.readPower(); }
+    float V()
+    {
+        return this->withmux([&]()
+                             { return this->ina.readBusVoltage() / 1000.0; });
+    }
+    float I()
+    {
+        return this->withmux([&]()
+                             { return this->ina.readCurrent(); });
+    }
+    float W()
+    {
+        return this->withmux([&]()
+                             { return this->ina.readPower(); });
+    }
 
 protected:
     Adafruit_INA260 ina = Adafruit_INA260();
@@ -330,14 +355,20 @@ public:
 
     bool begin()
     {
-        if (!this->ina.begin())
-            ERROR(F("Couldn't find INA260"));
-        LOG(F("Began INA219."));
-        return true;
+        return this->withmux([&]()
+                             {
+            if (!this->ina.begin())
+                ERROR(F("Couldn't find INA260"));
+            LOG(F("Began INA219."));
+            return true; });
     }
 
     // float V() { return this->ina.getShuntVoltage_mV(); }
-    float I() { return this->ina.getCurrent_mA(); }
+    float I()
+    {
+        return this->withmux([&]()
+                             { return this->ina.getCurrent_mA(); });
+    }
     // float W() { return this->ina.getPower_mW(); }
 
 protected:
