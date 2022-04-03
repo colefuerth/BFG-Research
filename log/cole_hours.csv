@@ -9,3 +9,7 @@ date,time_start,time_stop,time_delta,summary
 2022/03/16,11:00,13:00,2:00,"Migrated compilation and uploading protocols to Windows, from Linux"
 2022/03/16,15:00,19:00,4:00,Tested arduino-side json processing; optimized arduino memory usage; fixed bug with packing responses; reworked device initializations; started python data collection testing
 2022/03/16,10:00,11:59,2:00,Finished pi-side json processing; serial comms need to be sped up
+2022/03/23,13:00,17:00,4:00,Three devices now communicating; rest should be easy
+2022/03/24,19:00,22:00,3:00,"Rewired test bench, expanded Devices header"
+2022/04/01,00:00,03:00,3:00,"Remainder of devices tested individually. Multiplexer backend created, there were some device conflicts when combining devices."
+2022/04/02 - 2022/04/03,18:00,01:00,7:00,"All devices now communicating, in any combination. Load testing done. CSV logging implemented properly. Almost ready to deploy."

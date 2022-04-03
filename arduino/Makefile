@@ -29,12 +29,16 @@ libraries:
 	$(AC) lib install "Adafruit SHTC3 Library"
 	$(AC) lib install "Adafruit MAX31855 library"
 	$(AC) lib install "Adafruit INA260 Library"
+	$(AC) lib install "Adafruit INA219"
 
 # attach:
 # 	$(AC) board attach -b $(BOARD) -p $(USB) $(MAIN)
 
 build:
 	$(AC) compile --fqbn $(BOARD) $(MAIN)
+
+vbuild:
+	$(AC) compile -v --fqbn $(BOARD) $(MAIN)
 
 upload:
 	$(AC) upload --port $(USB) --fqbn $(BOARD) --programmer $(PROGRAMMER) $(MAIN)

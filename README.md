@@ -19,7 +19,7 @@ The [arduino-cli](https://siytek.com/arduino-cli-raspberry-pi/) project is used 
 | <img src='img/BFG3.jpg' width=600 alt='BFG_3'>            | [MAX17043](https://www.maximintegrated.com/en/products/power/battery-management/MAX17043.html)     | [Datasheet](datasheets/MAX17043-MAX17044.pdf)                                | [SparkFun library](https://github.com/sparkfun/SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library)                                                                     | Analog Devices | BFG, Measures mV across battery cell for estimate.                                                |
 | <img src='img/TCA9548A.jpg' width=600 alt='multiplexer'>  | [TCA9548A](https://learn.adafruit.com/adafruit-tca9548a-1-to-8-i2c-multiplexer-breakout/downloads) | [Datasheet](datasheets/tca9548a.pdf)                                         | [GitHub](https://github.com/WifWaf/TCA9548A)                                                                                                                     | AdaFruit       | An I2C multiplexer, for connecting all devices to the arduino I2C bus.                            |
 | <img src='img/SHTC3.jpg' width=600 alt='multiplexer'>     | [SHTC3](https://learn.adafruit.com/adafruit-sensirion-shtc3-temperature-humidity-sensor/arduino)   | [Datasheet](datasheets/SHTC3.pdf)                                            | [GitHub library](https://github.com/adafruit/Adafruit_SHTC3)                                                                                                     | AdaFruit       | Adafruit Sensirion SHTC3 Temperature & Humidity Sensor                                            |
-| <img src='img/MAX31855.jpg' width=600 alt='thermocouple'> | [MAX31855](https://www.adafruit.com/product/269)                                                   | [Datasheet](datasheets/MAX31855.pdf)                                         | [Arduino Guide](https://learn.adafruit.com/thermocouple/arduino-code#arduino-library-2958404-6), [GitHub](https://github.com/adafruit/Adafruit-MAX31855-library) | AdaFruit       | Thermocouple Amplifier MAX31855 breakout board, USES SERIAL. might need to connect directly to Pi |
+| <img src='img/MAX31855.jpg' width=600 alt='thermocouple'> | [MAX31855](https://www.adafruit.com/product/269)                                                   | [Datasheet](datasheets/MAX31855.pdf)                                         | [Arduino Guide](https://learn.adafruit.com/thermocouple/arduino-code#arduino-library-2958404-6), [GitHub](https://github.com/adafruit/Adafruit-MAX31855-library) | AdaFruit       | Thermocouple Amplifier MAX31855 breakout board, USES SOFTSERIAL. Uses pins 4,5,6 |
 | <img src='img/INA260.jpg' width=600 alt='power sensor'>   | [INA260](https://learn.adafruit.com/adafruit-ina260-current-voltage-power-sensor-breakout)         | [Datasheet](datasheets/ina260.pdf)                                           | [GitHub library](https://github.com/adafruit/Adafruit_INA260)                                                                                                    | AdaFruit       | Adafruit INA260 Current + Voltage + Power Sensor                                                  |
 
 ## Implementation
@@ -58,7 +58,24 @@ The arduino will interface with all hardware devices over I2C. Whenever a reques
 | T   | LC709203F                   | Battery Temperature (C)           | float       |
 | H   | SHTC3                       | Ambient Humidity (Relative, %)    | float       |
 
+*It should be noted that the MAX31855 can call T() for thermocouple reading, or C() for internal temp reading. C() usually returns capacity in mAh.
+
 <!-- | S                   | ?                                 | Battery State (0=discharging, 1=charging) | int   | -->
+
+## Device Communication
+
+| Device | Address |
+|:---|:---|
+| TCA9548A | 0x70 |
+| LTC2941 | 0x64 |
+| SHTC3 | 0x70 |
+| MAX31855 | SPI |
+| MAX17043 | 0x36 |
+| INA219 | 0x40 |
+| LTC2941 | 0x64 |
+| INA260 | 0x40 |
+
+*NOTE:* The TCA9548 Multiplexer address needs to be changed to 0x71. This is done by pulling pin A0 HIGH.
 
 ### Request JSON (Pi -> Arduino)
 

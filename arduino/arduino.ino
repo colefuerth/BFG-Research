@@ -3,29 +3,43 @@
 
 #include "ArduinoJson-v6.19.2.h"
 #include "Devices.h"
+// #include <TCA9548A.h> // mux
 
-StaticJsonDocument<128> doc; // json document for read/write, declared on the stack
+DynamicJsonDocument doc(128); // json document for read/write, declared on the stack
+
+// these two are ESSENTIAL for the use of the multiplexer `Device` backend
+uint8_t Device::mux = 0x71;      // address of mux
+uint8_t Device::channels = 0x00; // default mux state (changed by devices as needed)
 
 // array of devices
-// here to make sure that devices do indeed compile;
-// if they are not called in main, they will not compile
-TCA9548AMUX mux;
-Device *devices[] = {new LC709203F(), new LTC2941_BFG(), new MAX1704x_BFG(), new SHTC3(), new MAX31855(), new INA260()};
-// Device *devices[] = {new Device()};
+// If passed a multiplexer channel, then the multiplexer will only allow the device to communicate on that channel when absolutely necessary
+Device *devices[] = {new MAX31855(), new INA219(0), new SHTC3(1), new INA260(2), new LC709203F(3), new MAX1704x_BFG(4)};
+// 
+// , new LTC2941_BFG() // NOT HERE
 
 void setup()
 {
     Serial.begin(115200);
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LOW);
+    while (!Serial)
+        delay(1);
 
-    // mux.begin(Wire);
-    // for (Device *d : devices)
-    // {
-    //     d->begin();
-    // }
+    if (TWCR == 0) // do this check so that Wire only gets initialized once
+    {
+        Wire.begin();
+        LOG("Wire initialized");
+    }
 
-    LOG(F("Done setup"));
+    // initialize mux
+    Device::setmux(Device::channels); // set base state
+    LOG("Mux initialized");
+    for (Device *d : devices)
+    {
+        d->begin();
+    }
+
+    LOG("Done setup");
 }
 
 void loop()
@@ -52,10 +66,11 @@ void loop()
                 ret[String(c)] = getValue(d, c);
             }
             serializeJson(ret, Serial); // send return package
+            Serial.print('\n');         // delimiter between packets
         }
         digitalWrite(LED_BUILTIN, LOW);
     }
-    delay(1);   // slow the processor down a little
+    delay(1); // slow the processor down a little
 }
 
 Device *getDevice(String _D)
@@ -67,7 +82,7 @@ Device *getDevice(String _D)
             return d;
         }
     }
-    ERROR(F("Requested device not found"));
+    ERROR("Requested device not found");
     return NULL; // will return an empty device if not found
 }
 
