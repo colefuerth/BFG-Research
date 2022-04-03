@@ -5,17 +5,17 @@
 #include "Devices.h"
 // #include <TCA9548A.h> // mux
 
-StaticJsonDocument<128> doc; // json document for read/write, declared on the stack
+DynamicJsonDocument doc(128); // json document for read/write, declared on the stack
 
 // these two are ESSENTIAL for the use of the multiplexer `Device` backend
-TCA9548A Device::mux(0x71);      // address of mux
-uint8_t Device::channels = 0xFF; // default mux state
+uint8_t Device::mux = 0x71;      // address of mux
+uint8_t Device::channels = 0x00; // default mux state (changed by devices as needed)
 
 // array of devices
 // If passed a multiplexer channel, then the multiplexer will only allow the device to communicate on that channel when absolutely necessary
-Device *devices[] = {new Device(), new MAX31855(), new SHTC3()};
-// , new LC709203F(), new LTC2941_BFG(), new INA219(), new SHTC3(), new MAX1704x_BFG(), new INA260(), new LC709203F(),
-// Device *devices[] = {new Device()};
+Device *devices[] = {new MAX31855(), new INA219(0), new SHTC3(1), new INA260(2), new LC709203F(3), new MAX1704x_BFG(4)};
+// 
+// , new LTC2941_BFG() // NOT HERE
 
 void setup()
 {
@@ -28,19 +28,18 @@ void setup()
     if (TWCR == 0) // do this check so that Wire only gets initialized once
     {
         Wire.begin();
-        LOG(F("Wire initialized"));
+        LOG("Wire initialized");
     }
 
     // initialize mux
-    Device::mux.begin();
-    Device::mux.writeRegister(Device::channels); // set base state
-    LOG(F("Mux initialized"));
+    Device::setmux(Device::channels); // set base state
+    LOG("Mux initialized");
     for (Device *d : devices)
     {
         d->begin();
     }
 
-    LOG(F("Done setup"));
+    LOG("Done setup");
 }
 
 void loop()
@@ -83,7 +82,7 @@ Device *getDevice(String _D)
             return d;
         }
     }
-    ERROR(F("Requested device not found"));
+    ERROR("Requested device not found");
     return NULL; // will return an empty device if not found
 }
 

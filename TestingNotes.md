@@ -1,6 +1,10 @@
-# Testing Notes for Temperature Bench
+# Testing Notes
 
-Testing done on Match 23, 2022.
+## Testing Results
+
+- All devices will work together, with the multiplexer
+- The max number of device types allowed at a time is about 6 (PROGMEM limitation)
+- The maximum update rate is about 16Hz (serial limitation, can be reduced if needed).
 
 ## LC709203
 
@@ -40,4 +44,7 @@ Testing done on Match 23, 2022.
 
 ## TCA9548A Multiplexer
 
-- Open all channels right away
+- Close all channels right away
+- Any time you want to use a channel, open it using the `Device::setmux()` function
+- Data is collected by passing a lambda function containing the code to get the data, to `Device::withmux(Func f)`.
+
