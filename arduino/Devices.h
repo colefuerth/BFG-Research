@@ -6,7 +6,7 @@
 
 // bfg libraries
 #include <Adafruit_LC709203F.h>
-#include <LTC2941.h>
+// #include <LTC2941.h>
 #include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
 
 // remaining libraries
@@ -162,38 +162,38 @@ protected:
     Adafruit_LC709203F lc;
 };
 
-class LTC2941_BFG : public Device
-{
-public:
-    LTC2941_BFG(int channel = -1) : Device(channel)
-    {
-        this->_D = "LTC2941";
-    }
+// class LTC2941_BFG : public Device
+// {
+// public:
+//     LTC2941_BFG(int channel = -1) : Device(channel)
+//     {
+//         this->_D = "LTC2941";
+//     }
 
-    bool begin()
-    {
-        this->open();
-        this->ltc.initialize();
-        ltc2941.setBatteryFullMAh(1000);
-        LOG("LTC2941 initialized");
-        this->close();
-        return true;
-    }
+//     bool begin()
+//     {
+//         this->open();
+//         this->ltc.initialize();
+//         ltc2941.setBatteryFullMAh(1000);
+//         LOG("LTC2941 initialized");
+//         this->close();
+//         return true;
+//     }
 
-    float C()
-    {
-        return this->withmux([&]()
-                             { return this->ltc.getmAh(); });
-    }
-    float P()
-    {
-        return this->withmux([&]()
-                             { return this->ltc.getPercent(); });
-    }
+//     float C()
+//     {
+//         return this->withmux([&]()
+//                              { return this->ltc.getmAh(); });
+//     }
+//     float P()
+//     {
+//         return this->withmux([&]()
+//                              { return this->ltc.getPercent(); });
+//     }
 
-protected:
-    LTC2941 ltc = ltc2941; // the library instantiates one for some reason, just use the preexisting one
-};
+// protected:
+//     LTC2941 ltc = ltc2941; // the library instantiates one for some reason, just use the preexisting one
+// };
 
 // this sucks but it was the only way to get the library to compile
 SFE_MAX1704X lipo(MAX1704X_MAX17043);

@@ -1,7 +1,7 @@
 
 // main file for arduino i2c interface
 
-#include "ArduinoJson-v6.19.2.h"
+#include <ArduinoJson.h>
 #include "Devices.h"
 // #include <TCA9548A.h> // mux
 
