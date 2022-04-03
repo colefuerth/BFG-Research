@@ -19,6 +19,8 @@ PROGRAMMER = avrispmkii
 libraries:
 # 	install the avr binaries for micro
 	$(AC) core install arduino:avr
+#	install the JSON library
+	$(AC) lib install "ArduinoJson"
 #   install the BFG libraries
 	$(AC) lib install "Adafruit BusIO"
 	$(AC) lib install "Adafruit LC709203F"
