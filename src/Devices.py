@@ -7,18 +7,6 @@ from datetime import datetime, timezone
 
 arduino = serial.Serial(port='COM5', baudrate=115200, timeout=.05)  
 
-# callable attributes on sensors
-attributes = {
-    'V': 'Voltage',
-    'I': 'Current (mA)',
-    'C': 'Charge (mAh)',
-    'P': 'Percentage',
-    'T': 'Temperature (C)',
-    'H': 'Humidity',
-    'W': 'Power (W)',
-}
-
-
 class Sensor:
     # Generic class to interface with Sensor devices
     # this will provide a universal interface for data collecton between the three different Sensor devices
@@ -26,6 +14,7 @@ class Sensor:
         self.name = name
         self.updstr = updstr
         self.datadict = {s: '' for s in self.updstr}
+        self.filename = ''
 
     def update(self, data:dict) -> None:
         assert(data["D"] == self.name)
@@ -49,7 +38,7 @@ def sendpayload(request) -> None:
     else:
         msg += str(request)
     msg += "}"
-    print(msg)
+    # print(msg)
     arduino.write(msg.encode('utf-8'))
     arduino.flush()
 
@@ -60,6 +49,6 @@ def recvpayload() -> dict:
     if arduino.inWaiting() == 0:
         return None
     recv = arduino.readline().decode('utf-8').strip()
-    print(recv)
+    # print(recv)
     recv = json.loads(recv)
     return recv
