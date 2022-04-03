@@ -13,3 +13,4 @@ date,time_start,time_stop,time_delta,summary
 2022/03/24,19:00,22:00,3:00,"Rewired test bench, expanded Devices header"
 2022/04/01,00:00,03:00,3:00,"Remainder of devices tested individually. Multiplexer backend created, there were some device conflicts when combining devices."
 2022/04/02 - 2022/04/03,18:00,01:00,7:00,"All devices now communicating, in any combination. Load testing done. CSV logging implemented properly. Almost ready to deploy."
+2022/04/03,16:00,17:00,1:00,"Documentation updates, changed ArduinoJson to use Arduino library, closed remaining open issues on GitHub"

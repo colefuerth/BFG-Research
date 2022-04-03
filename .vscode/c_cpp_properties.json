@@ -53,10 +53,10 @@
             "includePath": [
                 "C:\\Users\\colef\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.5\\cores\\arduino",
                 "C:\\Users\\colef\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.5\\variants\\micro",
+                "G:\\My Drive\\Documents\\Arduino\\libraries\\ArduinoJson\\src",
                 "G:\\My Drive\\Documents\\Arduino\\libraries\\Wire\\src",
                 "G:\\My Drive\\Documents\\Arduino\\libraries\\Adafruit_LC709203F",
                 "G:\\My Drive\\Documents\\Arduino\\libraries\\Adafruit_BusIO",
-                "G:\\My Drive\\Documents\\Arduino\\libraries\\Grove_-_Coulomb_Counter_for_3.3V_to_5V_LTC2941",
                 "G:\\My Drive\\Documents\\Arduino\\libraries\\SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library\\src",
                 "G:\\My Drive\\Documents\\Arduino\\libraries\\Adafruit_SHTC3_Library",
                 "G:\\My Drive\\Documents\\Arduino\\libraries\\Adafruit_Unified_Sensor",
