@@ -3,7 +3,6 @@
 
 #include <ArduinoJson.h>
 #include "Devices.h"
-// #include <TCA9548A.h> // mux
 
 DynamicJsonDocument doc(128); // json document for read/write, declared on the stack
 
@@ -30,8 +29,8 @@ void setup()
     }
 
     // initialize mux
-    Device::setmux(Device::channels); // set base state
-    LOG("Mux initialized");
+    // Device::setmux(Device::channels); // set base state
+    // LOG("Mux initialized");
     for (Device *d : devices)
     {
         d->begin();
@@ -46,8 +45,6 @@ void loop()
     if (Serial.available() > 0)
     {
         digitalWrite(LED_BUILTIN, HIGH);
-        // incoming data comes in as{DeviceStr:RequestsStr}
-        // example: {"LC709203F":"VP"} will get Voltage and Percent from LC709203F device
         deserializeJson(doc, Serial);
         JsonObject root = doc.as<JsonObject>();
         for (JsonPair kv : root)
