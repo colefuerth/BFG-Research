@@ -4,4 +4,4 @@
 bin/
 arduino/test
 __pycache__/
-logging/*
+data/*

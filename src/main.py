@@ -7,6 +7,7 @@ from datetime import datetime
 from itertools import count
 from collections import defaultdict
 
+hz = 1 # max is 16
 debugging = True
 
 allattr = 'VICPTHW'
@@ -31,7 +32,7 @@ attributes = {
 }
 
 def available_name(name:str, ext:str) -> str:
-    prefix = '../logging/'
+    prefix = '../data/'
     filename = f'{prefix}{name}.{ext}'
     if os.path.exists(filename):
         for i in count(1):
@@ -65,7 +66,6 @@ def debug(msg:str):
 
 def main():
     sensors = {k: Sensor(k, v) for k, v in Devices.items()}
-    hz = 1 # max is 16
 
     # create a csv file for each sensor
     for k, v in sensors.items():
