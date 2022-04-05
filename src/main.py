@@ -11,10 +11,7 @@ debugging = True
 
 allattr = 'VICPTHW'
 Devices = {
-    'SHTC3': 'TH',       # Temp Humidity
-    'INA219': 'I',       # Current sensor across shunt
     'MAX31855': 'TC',    # Thermocouple Amplifier
-    'MAX17043': 'VP',    # BFG
     'LC709203F': 'VPT',  # BFG
     'INA260': 'VIW'      # Current, Voltage, Power
 }

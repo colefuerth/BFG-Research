@@ -8,14 +8,12 @@
 DynamicJsonDocument doc(128); // json document for read/write, declared on the stack
 
 // these two are ESSENTIAL for the use of the multiplexer `Device` backend
-uint8_t Device::mux = 0x71;      // address of mux
-uint8_t Device::channels = 0x00; // default mux state (changed by devices as needed)
+// Device::mux = 0x71;      // address of mux
+// Device::channels = 0x00; // default mux state (changed by devices as needed)
 
 // array of devices
 // If passed a multiplexer channel, then the multiplexer will only allow the device to communicate on that channel when absolutely necessary
-Device *devices[] = {new MAX31855(), new INA219(0), new SHTC3(1), new INA260(2), new LC709203F(3), new MAX1704x_BFG(4)};
-// 
-// , new LTC2941_BFG() // NOT HERE
+Device *devices[] = {new MAX31855(), new INA260(), new LC709203F()};
 
 void setup()
 {

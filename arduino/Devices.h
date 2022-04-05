@@ -7,14 +7,14 @@
 // bfg libraries
 #include <Adafruit_LC709203F.h>
 // #include <LTC2941.h>
-#include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
+// #include <SparkFun_MAX1704x_Fuel_Gauge_Arduino_Library.h>
 
 // remaining libraries
-#include <Adafruit_SHTC3.h>
+// #include <Adafruit_SHTC3.h>
 #include <SPI.h> // for thermocouple softserial
 #include <Adafruit_MAX31855.h>
 #include <Adafruit_INA260.h>
-#include <Adafruit_INA219.h>
+// #include <Adafruit_INA219.h>
 // #include <TCA9548A.h> // mux
 
 // --------------- UTILITY FUNCTIONS ---------------
@@ -120,6 +120,9 @@ protected:
     }
 };
 
+uint8_t Device::mux = 0x70;      // default address of mux
+uint8_t Device::channels = 0xFF; // default mux state (changed by devices as needed)
+
 // ------------------ BFG DEVICES ------------------
 
 class LC709203F : public Device
@@ -196,91 +199,91 @@ protected:
 //     LTC2941 ltc = ltc2941; // the library instantiates one for some reason, just use the preexisting one
 // };
 
-// this sucks but it was the only way to get the library to compile
-SFE_MAX1704X lipo(MAX1704X_MAX17043);
-class MAX1704x_BFG : public Device
-{
-public:
-    MAX1704x_BFG(int channel = -1) : Device(channel)
-    {
-        this->_D = "MAX17043";
-    }
+// // this sucks but it was the only way to get the library to compile
+// SFE_MAX1704X lipo(MAX1704X_MAX17043);
+// class MAX1704x_BFG : public Device
+// {
+// public:
+//     MAX1704x_BFG(int channel = -1) : Device(channel)
+//     {
+//         this->_D = "MAX17043";
+//     }
 
-    bool begin()
-    {
-        return this->withmux<bool>([&]()
-                                   {
-        if (!lipo.begin(Wire))
-            ERROR("MAX17043 not detected. Please check wiring. Freezing.");
-        // Quick start restarts the MAX17044 in hopes of getting a more accurate guess for the SOC.
-        lipo.quickStart();
+//     bool begin()
+//     {
+//         return this->withmux<bool>([&]()
+//                                    {
+//         if (!lipo.begin(Wire))
+//             ERROR("MAX17043 not detected. Please check wiring. Freezing.");
+//         // Quick start restarts the MAX17044 in hopes of getting a more accurate guess for the SOC.
+//         lipo.quickStart();
 
-        // We can set an interrupt to alert when the battery SoC gets too low. We can alert at anywhere between 1% - 32%:
-        lipo.setThreshold(20); // Set alert threshold to 20%.
-        LOG("MAX17043 initialized");
-        return true; });
-    }
+//         // We can set an interrupt to alert when the battery SoC gets too low. We can alert at anywhere between 1% - 32%:
+//         lipo.setThreshold(20); // Set alert threshold to 20%.
+//         LOG("MAX17043 initialized");
+//         return true; });
+//     }
 
-    float V()
-    {
-        return this->withmux<float>([&]()
-                                    { return lipo.getVoltage(); });
-    }
-    float P()
-    {
-        return this->withmux<float>([&]()
-                                    { return lipo.getSOC(); });
-    }
+//     float V()
+//     {
+//         return this->withmux<float>([&]()
+//                                     { return lipo.getVoltage(); });
+//     }
+//     float P()
+//     {
+//         return this->withmux<float>([&]()
+//                                     { return lipo.getSOC(); });
+//     }
 
-    // protected:
-    // SFE_MAX1704X lipo(MAX1704X_MAX17043); // Create a MAX17043 object
-};
+//     // protected:
+//     // SFE_MAX1704X lipo(MAX1704X_MAX17043); // Create a MAX17043 object
+// };
 
-// ------------------ REMAINING I2C DEVICES ------------------
+// // ------------------ REMAINING I2C DEVICES ------------------
 
-class SHTC3 : public Device
-{
-public:
-    SHTC3(int channel = -1) : Device(channel)
-    {
-        this->_D = "SHTC3";
-    }
+// class SHTC3 : public Device
+// {
+// public:
+//     SHTC3(int channel = -1) : Device(channel)
+//     {
+//         this->_D = "SHTC3";
+//     }
 
-    bool begin()
-    {
-        return this->withmux<bool>([&]()
-                                   {
-        if (!shtc3.begin())
-            ERROR("Couldn't find SHTC3");
-        // Serial.println("Found SHTC3 sensor");
-        LOG("SHTC3 initialized");
-        return true; });
-    }
+//     bool begin()
+//     {
+//         return this->withmux<bool>([&]()
+//                                    {
+//         if (!shtc3.begin())
+//             ERROR("Couldn't find SHTC3");
+//         // Serial.println("Found SHTC3 sensor");
+//         LOG("SHTC3 initialized");
+//         return true; });
+//     }
 
-    float T()
-    {
-        return this->withmux<float>([&]()
-                                    {
-            this->_update();
-            return this->temp.temperature; });
-    }
-    float H()
-    {
-        return this->withmux<float>([&]()
-                                    {
-            this->_update();
-            return this->humidity.relative_humidity; });
-    }
+//     float T()
+//     {
+//         return this->withmux<float>([&]()
+//                                     {
+//             this->_update();
+//             return this->temp.temperature; });
+//     }
+//     float H()
+//     {
+//         return this->withmux<float>([&]()
+//                                     {
+//             this->_update();
+//             return this->humidity.relative_humidity; });
+//     }
 
-private:
-    Adafruit_SHTC3 shtc3 = Adafruit_SHTC3();
-    sensors_event_t humidity, temp;
+// private:
+//     Adafruit_SHTC3 shtc3 = Adafruit_SHTC3();
+//     sensors_event_t humidity, temp;
 
-    void _update()
-    {
-        this->shtc3.getEvent(&humidity, &temp);
-    }
-};
+//     void _update()
+//     {
+//         this->shtc3.getEvent(&humidity, &temp);
+//     }
+// };
 
 /**
  * @brief This class is a wrapper for the MAX31855. This device uses SPI, unlike other devices.
@@ -361,32 +364,32 @@ protected:
     Adafruit_INA260 ina;
 };
 
-class INA219 : public Device
-{
-public:
-    INA219(int channel = -1) : Device(channel)
-    {
-        this->_D = "INA219";
-    }
+// class INA219 : public Device
+// {
+// public:
+//     INA219(int channel = -1) : Device(channel)
+//     {
+//         this->_D = "INA219";
+//     }
 
-    bool begin()
-    {
-        return this->withmux<bool>([&]()
-                                   {
-        if (!this->ina.begin())
-            ERROR("Couldn't find INA260");
-        LOG(F("Began INA219."));
-        return true; });
-    }
+//     bool begin()
+//     {
+//         return this->withmux<bool>([&]()
+//                                    {
+//         if (!this->ina.begin())
+//             ERROR("Couldn't find INA260");
+//         LOG(F("Began INA219."));
+//         return true; });
+//     }
 
-    // float V() { return this->ina.getShuntVoltage_mV(); }
-    float I()
-    {
-        return this->withmux<float>([&]()
-                                    { return this->ina.getCurrent_mA(); });
-    }
-    // float W() { return this->ina.getPower_mW(); }
+//     // float V() { return this->ina.getShuntVoltage_mV(); }
+//     float I()
+//     {
+//         return this->withmux<float>([&]()
+//                                     { return this->ina.getCurrent_mA(); });
+//     }
+//     // float W() { return this->ina.getPower_mW(); }
 
-protected:
-    Adafruit_INA219 ina;
-};
+// protected:
+//     Adafruit_INA219 ina;
+// };
