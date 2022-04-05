@@ -1,5 +1,29 @@
 # BFG Research
 
+## HIL Branch Configuration
+
+### Overview
+
+This branch is specifically set up for Pradeep Kumar's HIL Temperature Project.
+
+This project uses the following devices:
+
+    INA260
+    LC709203F
+    MAX31855
+
+This configuration does **NOT** use the TCA9548A multiplexer. There are no address conflicts between the devices, and the TCA9548A is not necessary. That said, both I2C devices (INA260 and LC709203F) will be connected to the same I2C bus in parallel.
+
+### Running the Program
+
+Once `arduino.ino` has been programmed to the Arduino, connect over USB. In `src/Devices.py`, on Line 8, set the serial port to whichever port the Arduino is on.
+
+Request frequency is set using the Hz variable set at the top of `src/main.py`.
+
+Run `src/main.py` with python3, and the program will run, collecting data from the devices.
+
+Collected data, as well as a log, is stored in `data/`, in .csv and .txt files.
+
 ## Summary
 
 This repository is for development of data collection programs for a Raspberry Pi Zero, testing and comparing different Battery Fuel Gauges.
