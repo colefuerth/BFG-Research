@@ -106,13 +106,15 @@ protected:
     }
 
     /**
-     * @brief template function to get a value from a device. opens multiplexer channel (if specified) and closes it when done
+     * @brief template function to get a value from an I2C device. opens multiplexer channel (if specified) and closes it when done
+     * @tparam T type of value to return
+     * @param f function to call to get value
      */
-    template <typename Func>
-    float withmux(Func f)
+    template <typename T, typename Func>
+    T withmux(Func f)
     {
         this->open();
-        float ret = f();
+        T ret = f();
         this->close();
         return ret;
     }
@@ -130,32 +132,31 @@ public:
 
     bool begin()
     {
-        this->open();
-        // requires Wire pre began
+        return this->withmux<bool>([&]()
+                                   {
         if (!this->lc.begin())
             ERROR("Couldnt find Adafruit LC709203F? Make sure a battery is plugged in!");
         lc.setThermistorB(3950);
         lc.setPackSize(LC709203F_APA_500MAH);
         lc.setAlarmVoltage(3.4);
         LOG("LC709203F initialized");
-        this->close();
-        return true;
+        return true; });
     }
 
     float V()
     {
-        return this->withmux([&]()
-                             { return lc.cellVoltage(); });
+        return this->withmux<float>([&]()
+                                    { return lc.cellVoltage(); });
     }
     float P()
     {
-        return this->withmux([&]()
-                             { return lc.cellPercent(); });
+        return this->withmux<float>([&]()
+                                    { return lc.cellPercent(); });
     }
     float T()
     {
-        return this->withmux([&]()
-                             { return lc.getCellTemperature(); });
+        return this->withmux<float>([&]()
+                                    { return lc.getCellTemperature(); });
     }
 
 protected:
@@ -172,22 +173,22 @@ protected:
 
 //     bool begin()
 //     {
-//         this->open();
+// return this->withmux<bool>([&]()
+//                            {
 //         this->ltc.initialize();
 //         ltc2941.setBatteryFullMAh(1000);
 //         LOG("LTC2941 initialized");
-//         this->close();
-//         return true;
+//         return true;});
 //     }
 
 //     float C()
 //     {
-//         return this->withmux([&]()
+//         return this->withmux<float>([&]()
 //                              { return this->ltc.getmAh(); });
 //     }
 //     float P()
 //     {
-//         return this->withmux([&]()
+//         return this->withmux<float>([&]()
 //                              { return this->ltc.getPercent(); });
 //     }
 
@@ -207,7 +208,8 @@ public:
 
     bool begin()
     {
-        this->open();
+        return this->withmux<bool>([&]()
+                                   {
         if (!lipo.begin(Wire))
             ERROR("MAX17043 not detected. Please check wiring. Freezing.");
         // Quick start restarts the MAX17044 in hopes of getting a more accurate guess for the SOC.
@@ -216,19 +218,18 @@ public:
         // We can set an interrupt to alert when the battery SoC gets too low. We can alert at anywhere between 1% - 32%:
         lipo.setThreshold(20); // Set alert threshold to 20%.
         LOG("MAX17043 initialized");
-        this->close();
-        return true;
+        return true; });
     }
 
     float V()
     {
-        return this->withmux([&]()
-                             { return lipo.getVoltage(); });
+        return this->withmux<float>([&]()
+                                    { return lipo.getVoltage(); });
     }
     float P()
     {
-        return this->withmux([&]()
-                             { return lipo.getSOC(); });
+        return this->withmux<float>([&]()
+                                    { return lipo.getSOC(); });
     }
 
     // protected:
@@ -247,26 +248,26 @@ public:
 
     bool begin()
     {
-        this->open();
+        return this->withmux<bool>([&]()
+                                   {
         if (!shtc3.begin())
             ERROR("Couldn't find SHTC3");
         // Serial.println("Found SHTC3 sensor");
         LOG("SHTC3 initialized");
-        this->close();
-        return true;
+        return true; });
     }
 
     float T()
     {
-        return this->withmux([&]()
-                             {
+        return this->withmux<float>([&]()
+                                    {
             this->_update();
             return this->temp.temperature; });
     }
     float H()
     {
-        return this->withmux([&]()
-                             {
+        return this->withmux<float>([&]()
+                                    {
             this->_update();
             return this->humidity.relative_humidity; });
     }
@@ -332,28 +333,28 @@ public:
 
     bool begin()
     {
-        this->open();
+        return this->withmux<bool>([&]()
+                                   {
         if (!this->ina.begin())
             ERROR("Couldn't find INA260");
         LOG("INA260 initialized");
-        this->close();
-        return true;
+        return true; });
     }
 
     float V()
     {
-        return this->withmux([&]()
-                             { return this->ina.readBusVoltage() / 1000.0; });
+        return this->withmux<float>([&]()
+                                    { return this->ina.readBusVoltage() / 1000.0; });
     }
     float I()
     {
-        return this->withmux([&]()
-                             { return this->ina.readCurrent(); });
+        return this->withmux<float>([&]()
+                                    { return this->ina.readCurrent(); });
     }
     float W()
     {
-        return this->withmux([&]()
-                             { return this->ina.readPower(); });
+        return this->withmux<float>([&]()
+                                    { return this->ina.readPower(); });
     }
 
 protected:
@@ -370,19 +371,19 @@ public:
 
     bool begin()
     {
-        this->open();
+        return this->withmux<bool>([&]()
+                                   {
         if (!this->ina.begin())
             ERROR("Couldn't find INA260");
         LOG(F("Began INA219."));
-        this->close();
-        return true;
+        return true; });
     }
 
     // float V() { return this->ina.getShuntVoltage_mV(); }
     float I()
     {
-        return this->withmux([&]()
-                             { return this->ina.getCurrent_mA(); });
+        return this->withmux<float>([&]()
+                                    { return this->ina.getCurrent_mA(); });
     }
     // float W() { return this->ina.getPower_mW(); }
 
