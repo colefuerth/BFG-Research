@@ -13,8 +13,8 @@ uint8_t Device::channels = 0x00; // default mux state (changed by devices as nee
 
 // array of devices
 // If passed a multiplexer channel, then the multiplexer will only allow the device to communicate on that channel when absolutely necessary
-Device *devices[] = {new MAX31855(), new INA219(0), new SHTC3(1), new INA260(2), new LC709203F(3), new MAX1704x_BFG(4)};
-// 
+// NOTE: LC709203F MUST be initialized first, if sharing the same I2C bus as any other devices (except the multiplexer). It must also have battery power or it will fail initialization.
+Device *devices[] = {new LC709203F(3), new MAX31855(), new INA219(0), new SHTC3(1), new INA260(2), new MAX1704x_BFG(4)};
 // , new LTC2941_BFG() // NOT HERE
 
 void setup()
