@@ -77,7 +77,7 @@ public:
     // int S() { return 0; }           // state, 0=discharging, 1=charging
 protected:
     String _D; // Device ID
-    uint8_t _channel;
+    int _channel;
 
     void open()
     {
