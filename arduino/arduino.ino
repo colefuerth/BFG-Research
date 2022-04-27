@@ -6,15 +6,6 @@
 #include <ArduinoJson.h>
 #include "Devices.h"
 
-// setup watchdog timeout ISR
-#ifdef WatchDog
-#include <avr/wdt.h> // timeout when initializing functions
-ISR(WDT_vect)
-{
-    ERROR(F("Device timed out!"));
-}
-#endif
-
 DynamicJsonDocument doc(128); // json document for read/write, declared on the stack
 
 Device *devices[] = {new LC709203F(), new SHTC3(), new INA219(), new MAX1704x_BFG()};
@@ -28,14 +19,6 @@ void setup()
         delay(1);
     delay(10);
     LOG("Starting...");
-    delay(10);
-
-#ifdef WatchDog
-    wdt_reset();
-    wdt_enable(WDTO_1S);   // enable watchdog timer to 1 second
-    WDTCSR |= (1 << WDIE); // set the WDIE flag to enable interrupt callback function.
-    LOG("Watchdog timer enabled.");
-#endif
 
     if (TWCR == 0) // do this check so that Wire only gets initialized once
     {
@@ -46,14 +29,8 @@ void setup()
     for (Device *d : devices)
     {
         d->begin();
-#ifdef WatchDog
-        wdt_reset(); // each device gets up to 1 second to initialize
-#endif
     }
-
-#ifdef WatchDog
-    wdt_disable(); // disable watchdog timer
-#endif
+    
     LOG(F("Done setup"));
 }
 
