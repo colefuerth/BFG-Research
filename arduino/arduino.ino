@@ -1,21 +1,23 @@
 
 // main file for arduino i2c interface
 
+// #define WatchDog
+
 #include <ArduinoJson.h>
 #include "Devices.h"
-// #include <TCA9548A.h> // mux
+
+// setup watchdog timeout ISR
+#ifdef WatchDog
+#include <avr/wdt.h> // timeout when initializing functions
+ISR(WDT_vect)
+{
+    ERROR(F("Device timed out!"));
+}
+#endif
 
 DynamicJsonDocument doc(128); // json document for read/write, declared on the stack
 
-// these two are ESSENTIAL for the use of the multiplexer `Device` backend
-uint8_t Device::mux = 0x71;      // address of mux
-uint8_t Device::channels = 0x00; // default mux state (changed by devices as needed)
-
-// array of devices
-// If passed a multiplexer channel, then the multiplexer will only allow the device to communicate on that channel when absolutely necessary
-// NOTE: LC709203F MUST be initialized first, if sharing the same I2C bus as any other devices (except the multiplexer). It must also have battery power or it will fail initialization.
-Device *devices[] = {new LC709203F(3), new MAX31855(), new INA219(0), new SHTC3(1), new INA260(2), new MAX1704x_BFG(4)};
-// , new LTC2941_BFG() // NOT HERE
+Device *devices[] = {new LC709203F(), new SHTC3(), new INA219(), new MAX1704x_BFG()};
 
 void setup()
 {
@@ -24,27 +26,40 @@ void setup()
     digitalWrite(LED_BUILTIN, LOW);
     while (!Serial)
         delay(1);
+    delay(10);
+    LOG("Starting...");
+    delay(10);
+
+#ifdef WatchDog
+    wdt_reset();
+    wdt_enable(WDTO_1S);   // enable watchdog timer to 1 second
+    WDTCSR |= (1 << WDIE); // set the WDIE flag to enable interrupt callback function.
+    LOG("Watchdog timer enabled.");
+#endif
 
     if (TWCR == 0) // do this check so that Wire only gets initialized once
     {
         Wire.begin();
-        LOG("Wire initialized");
+        LOG(F("Wire initialized"));
     }
 
-    // initialize mux
-    Device::setmux(Device::channels); // set base state
-    LOG("Mux initialized");
     for (Device *d : devices)
     {
         d->begin();
+#ifdef WatchDog
+        wdt_reset(); // each device gets up to 1 second to initialize
+#endif
     }
 
-    LOG("Done setup");
+#ifdef WatchDog
+    wdt_disable(); // disable watchdog timer
+#endif
+    LOG(F("Done setup"));
 }
 
 void loop()
 {
-    // check for new data
+    // check for data
     if (Serial.available() > 0)
     {
         digitalWrite(LED_BUILTIN, HIGH);
@@ -82,7 +97,7 @@ Device *getDevice(String _D)
             return d;
         }
     }
-    ERROR("Requested device not found");
+    ERROR(F("Requested device not found"));
     return NULL; // will return an empty device if not found
 }
 
