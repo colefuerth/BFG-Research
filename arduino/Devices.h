@@ -14,6 +14,7 @@
 #include <SPI.h> // for thermocouple softserial
 #include <Adafruit_MAX31855.h>
 #include <Adafruit_INA260.h>
+
 #include <Adafruit_INA219.h>
 // #include <TCA9548A.h> // mux
 
@@ -120,6 +121,9 @@ protected:
     }
 };
 
+uint8_t Device::mux = 0x70;
+uint8_t Device::channels = 0xFF;
+
 // ------------------ BFG DEVICES ------------------
 
 class LC709203F : public Device
@@ -134,11 +138,13 @@ public:
     {
         return this->withmux<bool>([&]()
                                    {
-        if (!this->lc.begin())
+        this->lc = new Adafruit_LC709203F();
+        delay(10);
+        if (!this->lc->begin())
             ERROR("Couldnt find Adafruit LC709203F? Make sure a battery is plugged in!");
-        lc.setThermistorB(3950);
-        lc.setPackSize(LC709203F_APA_500MAH);
-        lc.setAlarmVoltage(3.4);
+        lc->setThermistorB(3950);
+        lc->setPackSize(LC709203F_APA_500MAH);
+        lc->setAlarmVoltage(3.4);
         LOG("LC709203F initialized");
         return true; });
     }
@@ -146,21 +152,21 @@ public:
     float V()
     {
         return this->withmux<float>([&]()
-                                    { return lc.cellVoltage(); });
+                                    { return lc->cellVoltage(); });
     }
     float P()
     {
         return this->withmux<float>([&]()
-                                    { return lc.cellPercent(); });
+                                    { return lc->cellPercent(); });
     }
     float T()
     {
         return this->withmux<float>([&]()
-                                    { return lc.getCellTemperature(); });
+                                    { return lc->getCellTemperature(); });
     }
 
 protected:
-    Adafruit_LC709203F lc;
+    Adafruit_LC709203F *lc;
 };
 
 // class LTC2941_BFG : public Device
@@ -375,7 +381,7 @@ public:
                                    {
         if (!this->ina.begin())
             ERROR("Couldn't find INA260");
-        LOG(F("Began INA219."));
+        LOG(F("INA219 initialized"));
         return true; });
     }
 

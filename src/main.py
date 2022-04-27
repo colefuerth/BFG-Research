@@ -9,15 +9,14 @@ from collections import defaultdict
 
 hz = 1 # max is 16
 debugging = True
+outputfolder='../data/'
 
 allattr = 'VICPTHW'
 Devices = {
     'SHTC3': 'TH',       # Temp Humidity
     'INA219': 'I',       # Current sensor across shunt
-    'MAX31855': 'TC',    # Thermocouple Amplifier
     'MAX17043': 'VP',    # BFG
-    'LC709203F': 'VPT',  # BFG
-    'INA260': 'VIW'      # Current, Voltage, Power
+    'LC709203F': 'VP',  # BFG
 }
 
 # callable attributes on sensors
@@ -32,7 +31,7 @@ attributes = {
 }
 
 def available_name(name:str, ext:str) -> str:
-    prefix = '../data/'
+    prefix = outputfolder
     filename = f'{prefix}{name}.{ext}'
     if os.path.exists(filename):
         for i in count(1):
