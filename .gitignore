@@ -5,4 +5,4 @@ bin/
 arduino/test
 __pycache__/
 data/*
-*.log
+.vscode/
