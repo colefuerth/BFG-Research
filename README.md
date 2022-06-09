@@ -2,6 +2,8 @@
 
 The BFG_Collection branch is the production branch for the BFG data collection project. This branch should be runnable as-is.
 
+**You can run this code with `py main.py` under the src folder.** It is no longer required to manually specify the COM port, as it is now automatically detected. Note that if multiple arduinos are connected, the first one will be used. This works on both Windows and Linux.
+
 ## Summary
 
 This repository is for development of data collection programs for a Raspberry Pi Zero, testing and comparing different Battery Fuel Gauges.
