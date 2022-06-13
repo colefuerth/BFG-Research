@@ -1,14 +1,18 @@
 
 // main file for arduino i2c interface
 
-// #define WatchDog
-
 #include <ArduinoJson.h>
 #include "Devices.h"
 
 DynamicJsonDocument doc(128); // json document for read/write, declared on the stack
 
-Device *devices[] = {new LC709203F(), new SHTC3(), new INA219(), new MAX1704x_BFG()};
+// these two are ESSENTIAL for the use of the multiplexer `Device` backend
+// Device::mux = 0x71;      // address of mux
+// Device::channels = 0x00; // default mux state (changed by devices as needed)
+
+// array of devices
+// If passed a multiplexer channel, then the multiplexer will only allow the device to communicate on that channel when absolutely necessary
+Device *devices[] = {new MAX31855(), new INA260(), new LC709203F()};
 
 void setup()
 {
@@ -17,31 +21,30 @@ void setup()
     digitalWrite(LED_BUILTIN, LOW);
     while (!Serial)
         delay(1);
-    delay(10);
-    LOG("Starting...");
 
     if (TWCR == 0) // do this check so that Wire only gets initialized once
     {
         Wire.begin();
-        LOG(F("Wire initialized"));
+        LOG("Wire initialized");
     }
 
+    // initialize mux
+    // Device::setmux(Device::channels); // set base state
+    // LOG("Mux initialized");
     for (Device *d : devices)
     {
         d->begin();
     }
-    
-    LOG(F("Done setup"));
+
+    LOG("Done setup");
 }
 
 void loop()
 {
-    // check for data
+    // check for new data
     if (Serial.available() > 0)
     {
         digitalWrite(LED_BUILTIN, HIGH);
-        // incoming data comes in as{DeviceStr:RequestsStr}
-        // example: {"LC709203F":"VP"} will get Voltage and Percent from LC709203F device
         deserializeJson(doc, Serial);
         JsonObject root = doc.as<JsonObject>();
         for (JsonPair kv : root)
@@ -74,7 +77,7 @@ Device *getDevice(String _D)
             return d;
         }
     }
-    ERROR(F("Requested device not found"));
+    ERROR("Requested device not found");
     return NULL; // will return an empty device if not found
 }
 
