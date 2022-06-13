@@ -10,6 +10,8 @@ from collections import defaultdict
 hz = 1 # max is 16
 debugging = True
 outputfolder='../data/'
+if not os.path.isdir(outputfolder):
+    os.mkdir(outputfolder)
 
 allattr = 'VICPTHW'
 Devices = {

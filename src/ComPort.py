@@ -19,8 +19,10 @@ def get_arduino_comport():
         # if line contains 'Arduino', return the COM port
         if 'Arduino' in line:
             for token in line.split(' '):
-                if token.startswith('COM'):
+                if platform.system() == 'Windows' and token.startswith('COM') or \
+                   platform.system() == 'Linux' and token.startswith('/dev/ttyACM'):
                     return token.strip()
+    raise Exception('No Arduino found')
 
 
 if __name__ == '__main__':
