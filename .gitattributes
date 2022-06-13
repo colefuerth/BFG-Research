@@ -18,3 +18,4 @@
 *.docx binary
 *.pptx binary
 *.xls binary
+*.exe binary
