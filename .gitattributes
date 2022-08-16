@@ -19,3 +19,4 @@
 *.pptx binary
 *.xls binary
 *.exe binary
+src/arduino-cli/linux64/arduino-cli binary
