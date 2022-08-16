@@ -6,8 +6,6 @@ import datetime
 
 BFG1 = pd.read_csv("LC709203F_5.csv")
 BFG2 = pd.read_csv("MAX17043_5.csv")
-
-
 BFG_arbin = pd.read_csv('BFG_take_2_Channel_2_Wb_1.CSV')
 
 # convert the timestamps to datetime objects
