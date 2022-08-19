@@ -99,7 +99,7 @@ for col in arbin_cols:
 
 # copy columns from LC709203F and MAX17043
 align_timestamps(output_df, dfnames['LC709203F'], {
-                 'Voltage': 'Voltage(V)_LC709203F', 'Percentage': 'SOC(%)_MAX17043'})
+                 'Voltage': 'Voltage(V)_LC709203F', 'Percentage': 'SOC(%)_LC709203F'})
 align_timestamps(output_df, dfnames['MAX17043'], {
                  'Voltage': 'Voltage(V)_MAX17043', 'Percentage': 'SOC(%)_MAX17043'})
 
