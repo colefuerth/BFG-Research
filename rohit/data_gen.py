@@ -13,7 +13,7 @@ import datetime
 # %%
 # create a dict of the dataframes
 dfnames = {'LC709203F': pd.read_csv("LC709203F_5.csv"), 'MAX17043': pd.read_csv(
-    "MAX17043_5.csv"), 'Arbin': pd.read_csv('BFG_take_2_Channel_2_Wb_1.CSV')}
+    "MAX17043_5.csv"), 'Arbin': pd.read_csv('BFG_take_2_Channel_2_Wb_1.CSV'), 'INA219': pd.read_csv('INA219_5.csv'), 'SHTC3': pd.read_csv('SHTC3_5.csv')}
 
 
 # %%
@@ -100,6 +100,10 @@ align_timestamps(output_df, dfnames['LC709203F'], {
                  'Voltage': 'Voltage(V)_LC709203F', 'Percentage': 'SOC(%)_LC709203F'})
 align_timestamps(output_df, dfnames['MAX17043'], {
                  'Voltage': 'Voltage(V)_MAX17043', 'Percentage': 'SOC(%)_MAX17043'})
+align_timestamps(output_df, dfnames['INA219'], {
+                 'Current (mA)': 'Current (mA)_INA219'})
+align_timestamps(output_df, dfnames['SHTC3'], {
+                 header: header + '_SHTC3' for header in 'Temperature (C),Humidity'.split(',')})
 
 
 # %%
