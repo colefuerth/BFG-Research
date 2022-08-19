@@ -11,33 +11,32 @@ import datetime
 
 
 # %%
-BFG1 = pd.read_csv("LC709203F_5.csv")
-BFG2 = pd.read_csv("MAX17043_5.csv")
-BFG_arbin = pd.read_csv('BFG_take_2_Channel_2_Wb_1.CSV')
+# create a dict of the dataframes
+dfnames = {'LC709203F': pd.read_csv("LC709203F_5.csv"), 'MAX17043': pd.read_csv(
+    "MAX17043_5.csv"), 'Arbin': pd.read_csv('BFG_take_2_Channel_2_Wb_1.CSV')}
 
 
 # %%
-# convert the timestamps to datetime objects
-BFG1['Timestamp'] = pd.to_datetime(BFG1['Timestamp'])
-BFG2['Timestamp'] = pd.to_datetime(BFG2['Timestamp'])
-BFG_arbin['Date_Time'] = pd.to_datetime(BFG_arbin['Date_Time'])
-# convert arbin timestamps from EST (-4 at time of recording) to UTC (0)
-if BFG_arbin['Date_Time'].iat[0].tzinfo is None:
-    BFG_arbin['Date_Time'] = BFG_arbin['Date_Time'] + \
-        datetime.timedelta(hours=4)
-    BFG_arbin['Date_Time'] = BFG_arbin['Date_Time'].dt.tz_localize('UTC')
-# add decimal seconds to arbin timestamps (arbin timestamps are in whole seconds, but recorded at 2hz)
-BFG_arbin['Test_Time(s)'] = BFG_arbin['Test_Time(s)'].astype(float) % 1
-BFG_arbin['Date_Time'] = BFG_arbin['Date_Time'] + \
-    pd.to_timedelta(BFG_arbin['Test_Time(s)'], unit='s')
+# Prepare Arbin data for comparison with other data
 
-# rename relevant columns for comparing to BFG1 and BFG2
-BFG_arbin = BFG_arbin.rename(
+# rename relevant columns for comparing to dfnames['BFG1'] and dfnames['BFG2']
+dfnames['Arbin'] = dfnames['Arbin'].rename(
     columns={'Date_Time': 'Timestamp'})
+# convert the timestamps to datetime objects
+for name, df in dfnames.items():
+    df['Timestamp'] = pd.to_datetime(df['Timestamp'])
+# convert arbin timestamps from EST (-4 at time of recording) to UTC (0)
+if dfnames['Arbin']['Timestamp'].iat[0].tzinfo is None:
+    dfnames['Arbin']['Timestamp'] = dfnames['Arbin']['Timestamp'] + \
+        datetime.timedelta(hours=4)
+    dfnames['Arbin']['Timestamp'] = dfnames['Arbin']['Timestamp'].dt.tz_localize(
+        'UTC')
+# add decimal seconds to arbin timestamps (arbin timestamps are in whole seconds, but recorded at 2hz)
+dfnames['Arbin']['Test_Time(s)'] = dfnames['Arbin']['Test_Time(s)'].astype(
+    float) % 1
+dfnames['Arbin']['Timestamp'] = dfnames['Arbin']['Timestamp'] + \
+    pd.to_timedelta(dfnames['Arbin']['Test_Time(s)'], unit='s')
 
-# create a dict of the dataframes
-dfnames = {'LC709203F': BFG1, 'MAX17043': BFG2, 'Arbin': BFG_arbin}
-del BFG1, BFG2, BFG_arbin
 
 # %%
 # truncate database entries that have timestamps that are leading or trailing
@@ -93,9 +92,8 @@ def align_timestamps(output_df: pd.DataFrame, input_df: pd.DataFrame, column_map
 # copy columns from each source df into the output df
 
 # start with grabbing anything remotely useful from Arbin
-arbin_cols = 'Current(A),Voltage(V),Power(W),Charge_Capacity(Ah),Discharge_Capacity(Ah),Charge_Energy(Wh),Discharge_Energy(Wh)'.split(',')
-for col in arbin_cols:
-    align_timestamps(output_df, dfnames['Arbin'], {col: col + '_Arbin'})
+align_timestamps(output_df, dfnames['Arbin'], {
+                 col: col + '_Arbin' for col in 'Current(A),Voltage(V),Power(W),Charge_Capacity(Ah),Discharge_Capacity(Ah),Charge_Energy(Wh),Discharge_Energy(Wh)'.split(',')})
 
 # copy columns from LC709203F and MAX17043
 align_timestamps(output_df, dfnames['LC709203F'], {
