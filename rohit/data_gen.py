@@ -12,8 +12,13 @@ import datetime
 
 # %%
 # create a dict of the dataframes
-dfnames = {'LC709203F': pd.read_csv("LC709203F_5.csv"), 'MAX17043': pd.read_csv(
-    "MAX17043_5.csv"), 'Arbin': pd.read_csv('BFG_take_2_Channel_2_Wb_1.CSV'), 'INA219': pd.read_csv('INA219_5.csv'), 'SHTC3': pd.read_csv('SHTC3_5.csv')}
+dfnames = {
+    'LC709203F': pd.read_csv("LC709203F_5.csv"),
+    'MAX17043' : pd.read_csv("MAX17043_5.csv"),
+    'Arbin'    : pd.read_csv('BFG_take_2_Channel_2_Wb_1.CSV'),
+    'INA219'   : pd.read_csv('INA219_5.csv'),
+    'SHTC3'    : pd.read_csv('SHTC3_5.csv')
+}
 
 
 # %%
@@ -26,11 +31,8 @@ dfnames['Arbin'] = dfnames['Arbin'].rename(
 for name, df in dfnames.items():
     df['Timestamp'] = pd.to_datetime(df['Timestamp'])
 # convert arbin timestamps from EST (-4 at time of recording) to UTC (0)
-if dfnames['Arbin']['Timestamp'].iat[0].tzinfo is None:
-    dfnames['Arbin']['Timestamp'] = dfnames['Arbin']['Timestamp'] + \
-        datetime.timedelta(hours=4)
-    dfnames['Arbin']['Timestamp'] = dfnames['Arbin']['Timestamp'].dt.tz_localize(
-        'UTC')
+dfnames['Arbin']['Timestamp'] = (dfnames['Arbin']['Timestamp'] +
+                                 datetime.timedelta(hours=4)).dt.tz_localize('UTC')
 # add decimal seconds to arbin timestamps (arbin timestamps are in whole seconds, but recorded at 2hz)
 dfnames['Arbin']['Test_Time(s)'] = dfnames['Arbin']['Test_Time(s)'].astype(
     float) % 1
@@ -91,11 +93,8 @@ def align_timestamps(output_df: pd.DataFrame, input_df: pd.DataFrame, column_map
 # %%
 # copy columns from each source df into the output df
 
-# start with grabbing anything remotely useful from Arbin
 align_timestamps(output_df, dfnames['Arbin'], {
                  col: col + '_Arbin' for col in 'Current(A),Voltage(V),Power(W),Charge_Capacity(Ah),Discharge_Capacity(Ah),Charge_Energy(Wh),Discharge_Energy(Wh)'.split(',')})
-
-# copy columns from LC709203F and MAX17043
 align_timestamps(output_df, dfnames['LC709203F'], {
                  'Voltage': 'Voltage(V)_LC709203F', 'Percentage': 'SOC(%)_LC709203F'})
 align_timestamps(output_df, dfnames['MAX17043'], {
