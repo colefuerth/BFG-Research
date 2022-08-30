@@ -16,6 +16,8 @@ PROGRAMMER = avrispmkii
 
 # arduino-cli documentation [here](https://arduino.github.io/arduino-cli/0.21/commands/arduino-cli/)
 
+# download arduino-cli from https://github.com/arduino/arduino-cli/releases
+
 libraries:
 # 	install the avr binaries for micro
 	$(AC) core install arduino:avr

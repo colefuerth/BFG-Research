@@ -7,8 +7,12 @@ from datetime import datetime
 from itertools import count
 from collections import defaultdict
 
-debugging = True
 hz = 1 # max is 16
+debugging = True
+
+outputfolder='../data/'
+if not os.path.isdir(outputfolder):
+    os.mkdir(outputfolder)
 
 allattr = 'VICPTHW'
 Devices = {
@@ -29,7 +33,7 @@ attributes = {
 }
 
 def available_name(name:str, ext:str) -> str:
-    prefix = '../data/'
+    prefix = outputfolder
     filename = f'{prefix}{name}.{ext}'
     if os.path.exists(filename):
         for i in count(1):

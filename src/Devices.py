@@ -4,8 +4,9 @@ import serial
 import json
 from time import sleep
 from datetime import datetime, timezone
+from ComPort import get_arduino_comport
 
-arduino = serial.Serial(port='COM5', baudrate=115200, timeout=.05)  
+arduino = serial.Serial(port=get_arduino_comport(), baudrate=115200, timeout=.05)  
 
 class Sensor:
     # Generic class to interface with Sensor devices

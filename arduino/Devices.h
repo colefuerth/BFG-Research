@@ -72,7 +72,7 @@ public:
     // int S() { return 0; }           // state, 0=discharging, 1=charging
 protected:
     String _D; // Device ID
-    uint8_t _channel;
+    int _channel;
 
     void open()
     {
@@ -132,11 +132,13 @@ public:
     {
         return this->withmux<bool>([&]()
                                    {
-        if (!this->lc.begin())
+        this->lc = new Adafruit_LC709203F();
+        delay(10);
+        if (!this->lc->begin())
             ERROR("Couldnt find Adafruit LC709203F? Make sure a battery is plugged in!");
-        lc.setThermistorB(3950);
-        lc.setPackSize(LC709203F_APA_500MAH);
-        lc.setAlarmVoltage(3.4);
+        lc->setThermistorB(3950);
+        lc->setPackSize(LC709203F_APA_500MAH);
+        lc->setAlarmVoltage(3.4);
         LOG("LC709203F initialized");
         return true; });
     }
@@ -144,21 +146,21 @@ public:
     float V()
     {
         return this->withmux<float>([&]()
-                                    { return lc.cellVoltage(); });
+                                    { return lc->cellVoltage(); });
     }
     float P()
     {
         return this->withmux<float>([&]()
-                                    { return lc.cellPercent(); });
+                                    { return lc->cellPercent(); });
     }
     float T()
     {
         return this->withmux<float>([&]()
-                                    { return lc.getCellTemperature(); });
+                                    { return lc->getCellTemperature(); });
     }
 
 protected:
-    Adafruit_LC709203F lc;
+    Adafruit_LC709203F *lc;
 };
 
 /**

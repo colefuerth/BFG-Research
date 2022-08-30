@@ -100,16 +100,16 @@ The arduino will interface with all hardware devices over I2C. Whenever a reques
 
 ## Device Communication
 
-| Device   | Address |
-| :------- | :------ |
-| TCA9548A | 0x70    |
-| LTC2941  | 0x64    |
-| SHTC3    | 0x70    |
-| MAX31855 | SPI     |
-| MAX17043 | 0x36    |
-| INA219   | 0x40    |
-| LTC2941  | 0x64    |
-| INA260   | 0x40    |
+| Device    | Address |
+| :-------- | :------ |
+| TCA9548A  | 0x70    |
+| LC709203F | 0x0B    |
+| SHTC3     | 0x70    |
+| MAX31855  | SPI     |
+| MAX17043  | 0x36    |
+| INA219    | 0x40    |
+| LTC2941   | 0x64    |
+| INA260    | 0x40    |
 
 *NOTE:* The TCA9548 Multiplexer address needs to be changed to 0x71. This is done by pulling pin A0 HIGH.
 
