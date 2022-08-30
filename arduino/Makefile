@@ -39,10 +39,10 @@ libraries:
 # 	$(AC) board attach -b $(BOARD) -p $(USB) $(MAIN)
 
 build:
-	$(AC) compile --fqbn $(BOARD) $(MAIN)
+	$(AC) compile --fqbn $(BOARD) $(MAIN).ino
 
 vbuild:
-	$(AC) compile -v --fqbn $(BOARD) $(MAIN)
+	$(AC) compile -v --fqbn $(BOARD) $(MAIN).ino
 
 upload:
 	$(AC) upload --port $(USB) --fqbn $(BOARD) --programmer $(PROGRAMMER) $(MAIN)
