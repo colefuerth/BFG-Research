@@ -1,8 +1,28 @@
 # BFG Research
 
-The BFG_Collection branch is the production branch for the BFG data collection project. This branch should be runnable as-is.
+## HIL Branch Configuration
 
-**You can run this code with `py main.py` under the src folder.** It is no longer required to manually specify the COM port, as it is now automatically detected. Note that if multiple arduinos are connected, the first one will be used. This works on both Windows and Linux.
+### Overview
+
+This branch is specifically set up for Pradeep Kumar's HIL Temperature Project.
+
+This project uses the following devices:
+
+    INA260
+    LC709203F
+    MAX31855
+
+This configuration does **NOT** use the TCA9548A multiplexer. There are no address conflicts between the devices, and the TCA9548A is not necessary. That said, both I2C devices (INA260 and LC709203F) will be connected to the same I2C bus in parallel.
+
+### Running the Program
+
+Once `arduino.ino` has been programmed to the Arduino, connect over USB. In `src/Devices.py`, on Line 8, set the serial port to whichever port the Arduino is on.
+
+Request frequency is set using the Hz variable set at the top of `src/main.py`.
+
+Run `src/main.py` with python3, and the program will run, collecting data from the devices.
+
+Collected data, as well as a log, is stored in `data/`, in .csv and .txt files.
 
 ## Summary
 

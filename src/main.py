@@ -9,16 +9,16 @@ from collections import defaultdict
 
 hz = 1 # max is 16
 debugging = True
+
 outputfolder='../data/'
 if not os.path.isdir(outputfolder):
     os.mkdir(outputfolder)
 
 allattr = 'VICPTHW'
 Devices = {
-    'SHTC3': 'TH',       # Temp Humidity
-    'INA219': 'I',       # Current sensor across shunt
-    'MAX17043': 'VP',    # BFG
-    'LC709203F': 'VP',  # BFG
+    'MAX31855': 'TC',    # Thermocouple Amplifier
+    'LC709203F': 'VPT',  # BFG
+    'INA260': 'VIW'      # Current, Voltage, Power
 }
 
 # callable attributes on sensors
