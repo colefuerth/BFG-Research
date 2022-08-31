@@ -13,6 +13,10 @@ DynamicJsonDocument doc(128); // json document for read/write, declared on the s
 // array of devices
 // If passed a multiplexer channel, then the multiplexer will only allow the device to communicate on that channel when absolutely necessary
 Device *devices[] = {new MAX31855(), new INA260(), new LC709203F()};
+LC709203F *lc = (LC709203F *)devices[2]; // need direct access to the LC for voltage readings for the relay
+#define RELAYCUTOFF 2.7
+
+#define RELAY_PIN 7
 
 void setup()
 {
@@ -35,6 +39,10 @@ void setup()
     {
         d->begin();
     }
+
+    // relay pin is 7, initialize to output
+    pinMode(RELAY_PIN, OUTPUT);
+    digitalWrite(RELAY_PIN, HIGH);
 
     LOG("Done setup");
 }
@@ -60,10 +68,21 @@ void loop()
             {
                 ret[String(c)] = getValue(d, c);
             }
+
             serializeJson(ret, Serial); // send return package
             Serial.print('\n');         // delimiter between packets
         }
         digitalWrite(LED_BUILTIN, LOW);
+    }
+    // if d->D() is the LC709203F, update the relay state
+    static unsigned long lastUpdate = 0;
+    if (millis() - lastUpdate > 1000)
+    {
+        lastUpdate = millis();
+        if (lc->V() < RELAYCUTOFF)
+        {
+            digitalWrite(RELAY_PIN, LOW);
+        }
     }
     delay(1); // slow the processor down a little
 }
